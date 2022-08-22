@@ -1,0 +1,44 @@
+package com.pickme.reggie.common;
+
+/**
+ * Message Centralize 响应消息常量集中管理
+ */
+
+public class MC {
+
+    //账号默认密码
+    public static final String DEFAULT_PWD = "123456";
+
+
+    /**
+     * 成功
+     */
+
+    public static final String S_LOGIN = "员工登录成功，用户名：";
+
+    public static final String S_INSERT = "添加成功";
+
+    public static final String S_DELETE = "删除成功";
+
+    public static final String S_UPDATE = "修改成功";
+
+
+    /**
+     * 失败
+     */
+
+    public static final String E_LOGIN_NO_NAME = "登录失败，用户名不存在";
+
+    public static final String E_LOGIN_PWD = "登录失败，密码不正确";
+
+    public static final String E_LOGIN_DISABLED = "账号已被禁用，无法登录";
+
+    public static final String E_USERNAME_EXIST = "账号已存在";
+
+    public static final String E_UNKNOWN = "未知错误：";
+
+    public static final String E_DELETE_DISH = "当前菜品正在售卖中，不能删除";
+
+    public static final String E_DELETE_SETMEAL = "当前套餐正在售卖中，不能删除";
+
+}

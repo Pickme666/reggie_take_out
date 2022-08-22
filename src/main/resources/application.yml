@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    # 应用程序的名称（可选）
+    name: reggie_take_out
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: root
+      password: 123456
+  # TODO 解决运行springboot时修改静态资源不实时更新
+  # 关闭 Thymeleaf 模板引擎缓存
+  thymeleaf:
+    cache: false
+
+mybatis-plus:
+  configuration:
+    #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射 address_book --> AddressBook
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+
+# TODO 上传文件储存位置
+reggie:
+  path: E:\BaiduNetdiskDownload\reggie_img\
