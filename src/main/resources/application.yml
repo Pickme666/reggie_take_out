@@ -15,6 +15,12 @@ spring:
   # 关闭 Thymeleaf 模板引擎缓存
   thymeleaf:
     cache: false
+  # redis 相关配置
+  redis:
+    host: localhost
+    port: 6379
+    #password: 123456
+    database: 0
 
 mybatis-plus:
   configuration:
