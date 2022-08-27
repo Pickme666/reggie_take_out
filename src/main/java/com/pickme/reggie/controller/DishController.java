@@ -2,15 +2,17 @@ package com.pickme.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.pickme.reggie.common.R;
+import com.pickme.reggie.common.Res;
 import com.pickme.reggie.dto.DishDto;
-import com.pickme.reggie.entity.Dish;
+import com.pickme.reggie.pojo.Dish;
 import com.pickme.reggie.service.inter.DishService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 菜品管理
@@ -30,9 +32,9 @@ public class DishController {
      * @return
      */
     @PostMapping
-    public R<String> save(@RequestBody DishDto dishDto) {
+    public Res<String> save(@RequestBody DishDto dishDto) {
         dishService.saveWithFlavor(dishDto);
-        return R.success("");
+        return Res.success("");
     }
 
 
@@ -42,9 +44,9 @@ public class DishController {
      * @return
      */
     @DeleteMapping
-    public R<String> delete(@RequestParam List<Long> ids) {
+    public Res<String> delete(@RequestParam List<Long> ids) {
         dishService.removeWithFlavor(ids);
-        return R.success("");
+        return Res.success("");
     }
 
 
@@ -54,9 +56,9 @@ public class DishController {
      * @return
      */
     @PutMapping
-    public R<String> update(@RequestBody DishDto dishDto) {
+    public Res<String> update(@RequestBody DishDto dishDto) {
         dishService.updateWithFlavor(dishDto);
-        return R.success("");
+        return Res.success("");
     }
 
     /**
@@ -66,7 +68,7 @@ public class DishController {
      * @return
      */
     @PostMapping("/status/{s}")
-    public R<String> status(@PathVariable Integer s, Long[] ids) {
+    public Res<String> status(@PathVariable Integer s, Long[] ids) {
         Dish dish = new Dish();
         dish.setStatus(s);
         //遍历id数组，每次遍历都为Dish对象设置不同的id值
@@ -74,7 +76,7 @@ public class DishController {
             dish.setId(id);
             dishService.updateById(dish);
         }
-        return R.success("");
+        return Res.success("");
     }
 
 
@@ -84,9 +86,9 @@ public class DishController {
      * @return
      */
     @GetMapping("/{id}")
-    public R<DishDto> getObject(@PathVariable Long id) {
+    public Res<DishDto> getObject(@PathVariable Long id) {
         DishDto dishDto = dishService.getByWithFlavor(id);
-        return R.success(dishDto);
+        return Res.success(dishDto);
     }
 
     /**
@@ -97,7 +99,7 @@ public class DishController {
      * @return 泛型为 DishDto 的 Page，因为 DishDto 类带有 categoryName 属性来封装分类名称
      */
     @GetMapping("/page")
-    public R<Page<DishDto>> page(Integer page,Integer pageSize,String name) {
+    public Res<Page<DishDto>> page(Integer page, Integer pageSize, String name) {
         //设置分页查询条件
         LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(StringUtils.isNotEmpty(name),Dish::getName,name);
@@ -108,7 +110,7 @@ public class DishController {
         //调用业务层方法，返回带有菜品基本信息和分类信息的 Page<DishDto> 对象
         Page<DishDto> dishDtoPage = dishService.pageWithCategory(dishPage, wrapper);
         //返回 dishDtoPage
-        return R.success(dishDtoPage);
+        return Res.success(dishDtoPage);
     }
 
     /**
@@ -117,7 +119,7 @@ public class DishController {
      * @return
      */
     @GetMapping("/list")
-    public R<List<Dish>> list(Dish dish) {
+    public Res<List<DishDto>> list(Dish dish) {
         Long categoryId = dish.getCategoryId();
         String name = dish.getName();
         LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<>();
@@ -129,6 +131,12 @@ public class DishController {
                 .orderByDesc(Dish::getUpdateTime)
         ;
         List<Dish> list = dishService.list(wrapper);
-        return R.success(list);
+
+        //遍历集合，查询每个菜品的口味数据
+        List<DishDto> dtoList = list.stream().map((item) -> {
+            Long dishID = item.getId();
+            return dishService.getByWithFlavor(dishID);
+        }).collect(Collectors.toList());
+        return Res.success(dtoList);
     }
 }

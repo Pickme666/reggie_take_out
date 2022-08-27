@@ -1,4 +1,4 @@
-package com.pickme.reggie.common;
+package com.pickme.reggie.common.util;
 
 /**
  * 基于 ThreadLocal 封装的工具类，用于保存和获取当前登录用户id，即Session中的数据
@@ -19,7 +19,7 @@ public class BaseContext {
      * 获取值
      * @return 登录用户id
      */
-    public static Long getCurrenId() {
+    public static Long getCurrentId() {
         return threadLocal.get();
     }
 }

@@ -1,8 +1,8 @@
 package com.pickme.reggie;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.pickme.reggie.entity.Dish;
-import com.pickme.reggie.entity.Setmeal;
+import com.pickme.reggie.pojo.Dish;
+import com.pickme.reggie.pojo.Setmeal;
 import com.pickme.reggie.service.inter.DishService;
 import com.pickme.reggie.service.inter.SetmealService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,14 +20,14 @@ import java.util.List;
 @SpringBootTest
 public class RemoveUnusedImageTest {
     @Value("${reggie.path}")
-    String path;
+    private String path;
     @Autowired
-    DishService dishService;
+    private DishService dishService;
     @Autowired
-    SetmealService setmealService;
+    private SetmealService setmealService;
 
     /**
-     * 清除开发环境没有被使用的图片资源
+     * 清除开发环境中没有被使用的图片资源
      */
     @Test
     public void testRemoveUnusedImage() {
@@ -42,9 +43,11 @@ public class RemoveUnusedImageTest {
             LambdaQueryWrapper<Setmeal> setmealWrapper = new LambdaQueryWrapper<>();
             setmealWrapper.eq(Setmeal::getImage, img);
 
+            //根据查询结果判断图片是否有被使用
             Dish dish = dishService.getOne(dishWrapper);
             Setmeal setmeal = setmealService.getOne(setmealWrapper);
             if (dish == null && setmeal == null) {
+                //删除图片
                 boolean delete = new File(path + img).delete();
                 if (delete) removes.add(img);
             }

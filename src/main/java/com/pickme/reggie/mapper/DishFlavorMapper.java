@@ -1,7 +1,7 @@
 package com.pickme.reggie.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.pickme.reggie.entity.DishFlavor;
+import com.pickme.reggie.pojo.DishFlavor;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

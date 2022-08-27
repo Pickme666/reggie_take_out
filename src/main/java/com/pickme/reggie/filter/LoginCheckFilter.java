@@ -1,11 +1,11 @@
-package com.pickme.reggie.controller.filter;
+package com.pickme.reggie.filter;
 
 import com.alibaba.fastjson.JSON;
-import com.pickme.reggie.common.BaseContext;
-import com.pickme.reggie.common.R;
-import com.pickme.reggie.entity.Employee;
+import com.pickme.reggie.common.Res;
+import com.pickme.reggie.common.util.BaseContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
+
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +26,17 @@ public class LoginCheckFilter implements Filter {
     // ** 匹配0个或多个目录/字符
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
 
+    //定义不需要过滤处理的请求路径
+    private final String[] urls = new String[]{
+            "/employee/login",
+            "/employee/logout",
+            "/backend/**",
+            "/front/**",
+            "/common/**",
+            "/user/sendMsg", //移动端发送验证码
+            "/user/login"    //移动端登录
+    };
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
@@ -33,15 +44,7 @@ public class LoginCheckFilter implements Filter {
 
         //获取本次请求的URI
         String uri = request.getRequestURI();
-        //log.info("拦截到请求URI：" + uri);
-
-        //定义不需要过滤处理的请求路径
-        String[] urls = new String[]{
-                "/employee/login",
-                "/employee/logout",
-                "/backend/**",
-                "/front/**"
-        };
+        log.info("拦截到请求URI：" + uri);
 
         //判断本次请求是否需要过滤处理
         if (check(urls,uri)) {
@@ -49,17 +52,30 @@ public class LoginCheckFilter implements Filter {
             return;
         }
 
-        //获取Session中的数据（登录用户id），判断是否已经登录
-        Long id = (Long) request.getSession().getAttribute("employee");
-        if (id != null) {
+        //后台管理端：获取Session中的数据（登录员工id），判断是否已经登录
+        if (request.getSession().getAttribute("employee") != null) {
             //将登录的用户id储存到ThreadLocal中
-            BaseContext.setCurrentId(id);
+            Long employeeId = (Long) request.getSession().getAttribute("employee");
+            BaseContext.setCurrentId(employeeId);
             //已登录，放行
             filterChain.doFilter(request,response);
-        } else {
-            //未登录，跳转
-            response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
+            return;
         }
+
+        //移动端：判断用户登录状态
+        if(request.getSession().getAttribute("user") != null){
+
+            Long userId = (Long) request.getSession().getAttribute("user");
+            BaseContext.setCurrentId(userId);
+
+            filterChain.doFilter(request,response);
+            log.info("用户已登录，用户id为：{}",userId);
+            return;
+        }
+
+        //未登录，页面跳转
+        log.info("用户未登录");
+        response.getWriter().write(JSON.toJSONString(Res.error("NOTLOGIN")));
     }
 
     /**

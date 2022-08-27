@@ -1,7 +1,7 @@
 package com.pickme.reggie.common.exception;
 
 import com.pickme.reggie.common.MC;
-import com.pickme.reggie.common.R;
+import com.pickme.reggie.common.Res;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,9 +22,9 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler(Exception.class)
-    public R<String> exceptionHandler(Exception ex) {
+    public Res<String> exceptionHandler(Exception ex) {
         ex.printStackTrace();
-        return R.error(MC.E_UNKNOWN + ex.getMessage());
+        return Res.error(MC.E_UNKNOWN + ex.getMessage());
     }
 
     /**
@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler(BusinessException.class)
-    public R<String> BusinessException(BusinessException ex) {
-        return R.error(ex.getMessage());
+    public Res<String> BusinessException(BusinessException ex) {
+        return Res.error(ex.getMessage());
     }
 }

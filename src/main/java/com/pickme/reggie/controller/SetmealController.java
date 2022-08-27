@@ -2,9 +2,9 @@ package com.pickme.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.pickme.reggie.common.R;
+import com.pickme.reggie.common.Res;
 import com.pickme.reggie.dto.SetmealDto;
-import com.pickme.reggie.entity.Setmeal;
+import com.pickme.reggie.pojo.Setmeal;
 import com.pickme.reggie.service.inter.SetmealService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +29,9 @@ public class SetmealController {
      * @return
      */
     @PostMapping
-    public R<String> save(@RequestBody SetmealDto setmealDto) {
+    public Res<String> save(@RequestBody SetmealDto setmealDto) {
         setmealService.saveWithDish(setmealDto);
-        return R.success("");
+        return Res.success("");
     }
 
 
@@ -41,9 +41,9 @@ public class SetmealController {
      * @return
      */
     @DeleteMapping
-    public R<String> remove(@RequestParam List<Long> ids) {
+    public Res<String> remove(@RequestParam List<Long> ids) {
         setmealService.removeWithDish(ids);
-        return R.success("");
+        return Res.success("");
     }
 
 
@@ -53,9 +53,9 @@ public class SetmealController {
      * @return
      */
     @PutMapping
-    public R<String> update(@RequestBody SetmealDto setmealDto) {
+    public Res<String> update(@RequestBody SetmealDto setmealDto) {
         setmealService.updateWithDish(setmealDto);
-        return R.success("");
+        return Res.success("");
     }
 
     /**
@@ -64,14 +64,14 @@ public class SetmealController {
      * @param ids
      */
     @PostMapping("/status/{s}")
-    public R<String> status(@PathVariable Integer s, Long[] ids) {
+    public Res<String> status(@PathVariable Integer s, Long[] ids) {
         Setmeal setmeal = new Setmeal();
         setmeal.setStatus(s);
         for (Long id : ids) {
             setmeal.setId(id);
             setmealService.updateById(setmeal);
         }
-        return R.success("");
+        return Res.success("");
     }
 
 
@@ -81,9 +81,9 @@ public class SetmealController {
      * @return
      */
     @GetMapping("/{id}")
-    public R<SetmealDto> getObject(@PathVariable Long id) {
+    public Res<SetmealDto> getObject(@PathVariable Long id) {
         SetmealDto setmealDto = setmealService.getByWithDish(id);
-        return R.success(setmealDto);
+        return Res.success(setmealDto);
     }
 
     /**
@@ -93,13 +93,29 @@ public class SetmealController {
      * @param name
      */
     @GetMapping("/page")
-    public R<Page<SetmealDto>> page(Integer page, Integer pageSize, String name) {
+    public Res<Page<SetmealDto>> page(Integer page, Integer pageSize, String name) {
         LambdaQueryWrapper<Setmeal> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(StringUtils.isNotEmpty(name),Setmeal::getName,name);
         wrapper.orderByDesc(Setmeal::getUpdateTime);
         //分页查询套餐基本和信息分类信息，将数据合并，返回 Page<SetmealDto> 对象
         Page<Setmeal> setmealPage = new Page<>(page,pageSize);
         Page<SetmealDto> setmealDtoPage = setmealService.pageWithCategory(setmealPage, wrapper);
-        return R.success(setmealDtoPage);
+        return Res.success(setmealDtoPage);
+    }
+
+    /**
+     * 根据分类id查询套餐列表（移动端）
+     * @param setmeal
+     * @return
+     */
+    @GetMapping("/list")
+    public Res<List<Setmeal>> list(Setmeal setmeal) {
+        Long categoryId = setmeal.getCategoryId();
+        Integer status = setmeal.getStatus();
+        LambdaQueryWrapper<Setmeal> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(categoryId != null,Setmeal::getCategoryId,categoryId);
+        wrapper.eq(status != null,Setmeal::getStatus,status);
+        List<Setmeal> list = setmealService.list(wrapper);
+        return Res.success(list);
     }
 }

@@ -1,8 +1,9 @@
 package com.pickme.reggie.dto;
 
-import com.pickme.reggie.entity.Setmeal;
-import com.pickme.reggie.entity.SetmealDish;
+import com.pickme.reggie.pojo.Setmeal;
+import com.pickme.reggie.pojo.SetmealDish;
 import lombok.Data;
+
 import java.util.List;
 
 @Data

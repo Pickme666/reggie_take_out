@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pickme.reggie.dto.DishDto;
-import com.pickme.reggie.entity.Dish;
+import com.pickme.reggie.pojo.Dish;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;

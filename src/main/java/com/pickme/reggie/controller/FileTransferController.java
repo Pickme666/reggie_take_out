@@ -1,6 +1,6 @@
 package com.pickme.reggie.controller;
 
-import com.pickme.reggie.common.R;
+import com.pickme.reggie.common.Res;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -34,7 +35,7 @@ public class FileTransferController {
      * @return
      */
     @PostMapping("/upload")
-    public R<String> upload(MultipartFile file) {
+    public Res<String> upload(MultipartFile file) {
         //获取上传文件名
         String filename = file.getOriginalFilename();
         //截取上传文件的后缀名
@@ -48,7 +49,7 @@ public class FileTransferController {
             throw new RuntimeException(e);
         }
         //返回新文件名
-        return R.success(newFilename);
+        return Res.success(newFilename);
     }
 
     /**
