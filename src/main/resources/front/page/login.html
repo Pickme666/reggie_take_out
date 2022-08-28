@@ -63,10 +63,9 @@
                     const regex = /^(13[0-9]{9})|(15[0-9]{9})|(17[0-9]{9})|(18[0-9]{9})|(19[0-9]{9})$/;
                     if (regex.test(this.form.phone)) {
                         this.msgFlag = false
-                        //页面自动随机生成验证码
-                        //this.form.code = (Math.random()*1000000).toFixed(0)
+                        //this.form.code = (Math.random()*1000000).toFixed(0) //页面自动随机生成验证码
                         //sendMsgApi({phone:this.form.phone})
-                        this.codeTest();
+                        this.codeTest(); //验证码回显
                     }else{
                         this.msgFlag = true
                     }
