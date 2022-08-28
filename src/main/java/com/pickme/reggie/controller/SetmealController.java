@@ -8,6 +8,8 @@ import com.pickme.reggie.pojo.Setmeal;
 import com.pickme.reggie.service.inter.SetmealService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,11 +26,12 @@ public class SetmealController {
     private SetmealService setmealService;
 
     /**
-     * 添加套餐
+     * 添加套餐，添加完成后清除缓存的指定分类下的套餐信息
      * @param setmealDto
      * @return
      */
     @PostMapping
+    @CacheEvict(value = "setmealCache",key = "#setmealDto.categoryId")
     public Res<String> save(@RequestBody SetmealDto setmealDto) {
         setmealService.saveWithDish(setmealDto);
         return Res.success("");
@@ -36,11 +39,12 @@ public class SetmealController {
 
 
     /**
-     * 删除或批量删除套餐
+     * 删除或批量删除套餐，@CacheEvict 注解的 allEntries 属性为是否清除指定缓存中的所有数据。
      * @param ids
      * @return
      */
     @DeleteMapping
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public Res<String> remove(@RequestParam List<Long> ids) {
         setmealService.removeWithDish(ids);
         return Res.success("");
@@ -53,6 +57,7 @@ public class SetmealController {
      * @return
      */
     @PutMapping
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public Res<String> update(@RequestBody SetmealDto setmealDto) {
         setmealService.updateWithDish(setmealDto);
         return Res.success("");
@@ -64,6 +69,7 @@ public class SetmealController {
      * @param ids
      */
     @PostMapping("/status/{s}")
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public Res<String> status(@PathVariable Integer s, Long[] ids) {
         Setmeal setmeal = new Setmeal();
         setmeal.setStatus(s);
@@ -109,6 +115,7 @@ public class SetmealController {
      * @return
      */
     @GetMapping("/list")
+    @Cacheable(value = "setmealCache",key = "#setmeal.categoryId")
     public Res<List<Setmeal>> list(Setmeal setmeal) {
         Long categoryId = setmeal.getCategoryId();
         Integer status = setmeal.getStatus();
