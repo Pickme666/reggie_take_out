@@ -6,6 +6,7 @@ import com.pickme.reggie.common.Res;
 import com.pickme.reggie.dto.SetmealDto;
 import com.pickme.reggie.pojo.Setmeal;
 import com.pickme.reggie.service.inter.SetmealService;
+import io.swagger.annotations.Api;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * 套餐管理
  */
-
+@Api(tags = "套餐管理")
 @RestController
 @RequestMapping("/setmeal")
 public class SetmealController {

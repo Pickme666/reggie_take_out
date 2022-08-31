@@ -2,6 +2,7 @@ package com.pickme.reggie.pojo;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 /**
  * 套餐菜品关系
  */
+@ApiModel("套餐相关菜品")
 @Data
 public class SetmealDish implements Serializable {
 

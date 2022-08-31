@@ -1,5 +1,6 @@
 package com.pickme.reggie.pojo;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -7,6 +8,7 @@ import java.io.Serializable;
 /**
  * 用户信息
  */
+@ApiModel("用户")
 @Data
 public class User implements Serializable {
 

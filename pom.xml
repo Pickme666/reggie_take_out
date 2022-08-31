@@ -95,6 +95,12 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
+        <!--TODO 集成 Swagger 文档生成的 knife4j 框架起步依赖-->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <version>3.0.2</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -5,6 +5,7 @@ import com.pickme.reggie.common.Res;
 import com.pickme.reggie.common.util.ValidateCodeUtils;
 import com.pickme.reggie.pojo.User;
 import com.pickme.reggie.service.inter.UserService;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 移动端用户登录
  */
-
+@Api(tags = "移动端用户登录")
 @Slf4j
 @RestController
 @RequestMapping("/user")

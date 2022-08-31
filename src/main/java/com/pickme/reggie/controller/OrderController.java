@@ -5,13 +5,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
 import com.pickme.reggie.pojo.Orders;
 import com.pickme.reggie.service.inter.OrderService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * 订单管理
  */
-
+@Api(tags = "订单管理")
 @RestController
 @RequestMapping("/order")
 public class OrderController {

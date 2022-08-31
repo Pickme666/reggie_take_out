@@ -2,6 +2,7 @@ package com.pickme.reggie.pojo;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 /**
  * 地址簿
  */
+@ApiModel("地址簿")
 @Data
 public class AddressBook implements Serializable {
 

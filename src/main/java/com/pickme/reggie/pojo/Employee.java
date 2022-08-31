@@ -2,6 +2,7 @@ package com.pickme.reggie.pojo;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 /**
  * 员工表实体类
  */
-
+@ApiModel("员工")
 @Data
 public class Employee implements Serializable {
 

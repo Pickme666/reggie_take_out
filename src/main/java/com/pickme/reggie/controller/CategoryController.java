@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
 import com.pickme.reggie.pojo.Category;
 import com.pickme.reggie.service.inter.CategoryService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * 分类管理
  */
-
+@Api(tags = "分类管理")
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
