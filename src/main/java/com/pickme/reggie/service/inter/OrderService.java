@@ -14,5 +14,5 @@ public interface OrderService extends IService<Orders> {
 
     Page<OrdersDto> pageWithDetail(Page<Orders> ordersPage, Wrapper<Orders> wrapper);
 
-    OrdersDto byIdRecurOrders(Long id);
+    boolean byIdRecurOrders(Long id);
 }

@@ -85,15 +85,12 @@ public class ShoppingCartController {
     }
 
     /**
-     * 删除全部商品，情况购物车
+     * 删除全部商品，清空购物车
      * @return
      */
     @DeleteMapping("/clean")
     public Res<String> removeAll() {
-        Long userId = LocalContext.getCurrentId();
-        LambdaQueryWrapper<ShoppingCart> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(userId != null,ShoppingCart::getUserId,userId);
-        shoppingCartService.remove(wrapper);
+        shoppingCartService.cleanCart();
         return Res.success("");
     }
 

@@ -38,10 +38,31 @@ public class AddressBookController {
     }
 
     /**
-     * 设置默认地址
+     * 删除地址
+     * @return
+     */
+    @DeleteMapping()
+    public Res<String> remove(Long ids) {
+        addressBookService.removeById(ids);
+        return Res.success("");
+    }
+
+    /**
+     * 修改地址信息
+     * @param addressBook
+     * @return
+     */
+    @PutMapping
+    public Res<String> update(@RequestBody AddressBook addressBook) {
+        addressBookService.updateById(addressBook);
+        return Res.success("");
+    }
+
+    /**
+     * 修改默认地址
      */
     @PutMapping("default")
-    public Res<AddressBook> setDefault(@RequestBody AddressBook addressBook) {
+    public Res<AddressBook> updateDefault(@RequestBody AddressBook addressBook) {
         Long userId = LocalContext.getCurrentId();
 
         LambdaUpdateWrapper<AddressBook> wrapper = new LambdaUpdateWrapper<>();

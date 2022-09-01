@@ -105,6 +105,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         return shoppingCartService.remove(wrapper);
     }
 
+    /**
+     * 查询订单列表及明细
+     * @param ordersPage
+     * @param wrapper
+     * @return
+     */
     @Override
     public Page<OrdersDto> pageWithDetail(Page<Orders> ordersPage, Wrapper<Orders> wrapper) {
 
@@ -120,9 +126,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
             //查询订单明细列表
             LambdaQueryWrapper<OrderDetail> orderWrapper = new LambdaQueryWrapper<>();
             orderWrapper.eq(orderId != null,OrderDetail::getOrderId,orderId);
-            List<OrderDetail> details = orderDetailService.list(orderWrapper);
+            List<OrderDetail> detailList = orderDetailService.list(orderWrapper);
 
-            if (details != null) dto.setOrderDetails(details);
+            if (detailList != null) dto.setOrderDetails(detailList);
             return dto;
         }).collect(Collectors.toList());
 
@@ -130,26 +136,33 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         return dtoPage;
     }
 
+    /**
+     * 再来一单，重新添加当前订单的商品信息到购物车
+     * @param id
+     * @return
+     */
     @Override
-    public OrdersDto byIdRecurOrders(Long id) {
-        Orders orders = this.getById(id);
+    public boolean byIdRecurOrders(Long id) {
 
         //查询订单明细列表
         LambdaQueryWrapper<OrderDetail> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(OrderDetail::getOrderId,id);
         List<OrderDetail> orderDetails = orderDetailService.list(wrapper);
 
-        /*List<ShoppingCart> shoppingCarts = orderDetails.stream().map(item -> {
-            Long dishId = item.getDishId();
-            Long setmealId = item.getSetmealId();
-            if (dishId != null) {
+        //清空当前购物车
+        shoppingCartService.cleanCart();
 
-            }
-            return
-        }).collect(Collectors.toList());*/
+        //遍历订单明细列表，设置购物车信息
+        List<ShoppingCart> shoppingCarts = orderDetails.stream().map(item -> {
+            ShoppingCart cart = new ShoppingCart();
+            BeanUtils.copyProperties(item,cart,"id");
+            cart.setUserId(LocalContext.getCurrentId());
+            cart.setCreateTime(LocalDateTime.now());
+            return cart;
+        }).collect(Collectors.toList());
 
-        return null;
+        //重新添加到购物车
+        return shoppingCartService.saveBatch(shoppingCarts);
     }
-
 
 }
