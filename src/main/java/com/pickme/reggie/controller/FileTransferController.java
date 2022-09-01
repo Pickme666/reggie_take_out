@@ -1,6 +1,7 @@
 package com.pickme.reggie.controller;
 
 import com.pickme.reggie.common.Res;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ import java.util.UUID;
 /**
  * 实现文件上传下载的通用控制器
  */
-
+@Api(tags = "文件上传下载")
 @Slf4j
 @RestController
 @RequestMapping("/common")

@@ -6,6 +6,7 @@ import com.pickme.reggie.common.MC;
 import com.pickme.reggie.common.Res;
 import com.pickme.reggie.pojo.Employee;
 import com.pickme.reggie.service.inter.EmployeeService;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * 员工管理
  */
-
+@Api(tags = "员工管理")
 @Slf4j
 @RestController
 @RequestMapping("/employee")

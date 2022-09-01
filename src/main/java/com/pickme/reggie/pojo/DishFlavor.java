@@ -2,6 +2,7 @@ package com.pickme.reggie.pojo;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 /**
 菜品口味
  */
+@ApiModel("菜品口味")
 @Data
 public class DishFlavor implements Serializable {
 

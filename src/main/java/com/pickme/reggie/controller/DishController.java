@@ -6,6 +6,7 @@ import com.pickme.reggie.common.Res;
 import com.pickme.reggie.dto.DishDto;
 import com.pickme.reggie.pojo.Dish;
 import com.pickme.reggie.service.inter.DishService;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * 菜品管理
  */
-
+@Api(tags = "菜品管理")
 @Slf4j
 @RestController
 @RequestMapping("/dish")
