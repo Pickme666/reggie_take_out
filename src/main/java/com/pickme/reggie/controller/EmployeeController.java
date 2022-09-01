@@ -130,6 +130,7 @@ public class EmployeeController {
         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
         //设置模糊查询条件（boolean condition 判断, R column 实体类属性, Object val 要查询的值）
         queryWrapper.like(StringUtils.isNotEmpty(name),Employee::getName,name);
+        queryWrapper.ne(Employee::getUsername,"admin");
         //设置排序条件
         queryWrapper.orderByDesc(Employee::getUpdateTime);
         employeeService.page(p,queryWrapper);

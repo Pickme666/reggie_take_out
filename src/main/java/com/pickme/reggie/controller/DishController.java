@@ -116,7 +116,7 @@ public class DishController {
      */
     @GetMapping("/{id}")
     public Res<DishDto> getObject(@PathVariable Long id) {
-        DishDto dishDto = dishService.getByWithFlavor(id);
+        DishDto dishDto = dishService.getByIdWithFlavor(id);
         return Res.success(dishDto);
     }
 
@@ -177,7 +177,7 @@ public class DishController {
         //遍历集合，查询每个菜品的口味数据
         dtoList = list.stream().map((item) -> {
             Long dishID = item.getId();
-            return dishService.getByWithFlavor(dishID);
+            return dishService.getByIdWithFlavor(dishID);
         }).collect(Collectors.toList());
 
         //如果没有缓存菜品数据，将查询的菜品数据缓存在redis中，设置60分钟有效时间

@@ -1,4 +1,4 @@
-package com.pickme.reggie.common;
+package com.pickme.reggie.common.util;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,7 +1,7 @@
 package com.pickme.reggie.config;
 
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
-import com.pickme.reggie.common.JacksonObjectMapper;
+import com.pickme.reggie.common.util.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

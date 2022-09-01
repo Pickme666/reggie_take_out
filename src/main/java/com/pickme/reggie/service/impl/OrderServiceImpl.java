@@ -1,14 +1,19 @@
 package com.pickme.reggie.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.pickme.reggie.common.MC;
 import com.pickme.reggie.common.exception.BusinessException;
-import com.pickme.reggie.common.util.BaseContext;
+import com.pickme.reggie.common.util.LocalContext;
+import com.pickme.reggie.dto.OrdersDto;
 import com.pickme.reggie.mapper.OrderMapper;
 import com.pickme.reggie.pojo.*;
 import com.pickme.reggie.service.inter.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +46,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     @Override
     public boolean submit(Orders orders) {
         //获得当前用户id, 查询当前用户的购物车数据
-        Long userId = BaseContext.getCurrentId();
+        Long userId = LocalContext.getCurrentId();
 
         //根据当前登录用户id, 查询用户数据
         User user = userService.getById(userId);
@@ -51,12 +56,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         wrapper.eq(ShoppingCart::getUserId,userId);
         List<ShoppingCart> shoppingCarts = shoppingCartService.list(wrapper);
         if (shoppingCarts == null || shoppingCarts.size() == 0) {
-            throw new BusinessException("购物车为空");
+            throw new BusinessException(MC.E_CAR_NULL);
         }
 
         //根据地址ID, 查询地址数据
         AddressBook addressBook = addressBookService.getById(orders.getAddressBookId());
-        if (addressBook == null) throw new BusinessException("地址信息异常，请重试");
+        if (addressBook == null) throw new BusinessException(MC.E_ADDRESS);
 
         long orderId = IdWorker.getId(); //MybatisPlus id获取器，生成一个唯一id
         AtomicInteger amount = new AtomicInteger(); //一个可以原子更新的int值，处理数字类型的工具
@@ -99,4 +104,52 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         //清空当前用户购物车数据
         return shoppingCartService.remove(wrapper);
     }
+
+    @Override
+    public Page<OrdersDto> pageWithDetail(Page<Orders> ordersPage, Wrapper<Orders> wrapper) {
+
+        Page<OrdersDto> dtoPage = new Page<>();
+        List<Orders> ordersList = this.page(ordersPage, wrapper).getRecords();
+        BeanUtils.copyProperties(ordersPage,dtoPage,"records");
+
+        List<OrdersDto> dtoList = ordersList.stream().map((item) -> {
+            Long orderId = item.getId();
+            OrdersDto dto = new OrdersDto();
+            BeanUtils.copyProperties(item,dto);
+
+            //查询订单明细列表
+            LambdaQueryWrapper<OrderDetail> orderWrapper = new LambdaQueryWrapper<>();
+            orderWrapper.eq(orderId != null,OrderDetail::getOrderId,orderId);
+            List<OrderDetail> details = orderDetailService.list(orderWrapper);
+
+            if (details != null) dto.setOrderDetails(details);
+            return dto;
+        }).collect(Collectors.toList());
+
+        dtoPage.setRecords(dtoList);
+        return dtoPage;
+    }
+
+    @Override
+    public OrdersDto byIdRecurOrders(Long id) {
+        Orders orders = this.getById(id);
+
+        //查询订单明细列表
+        LambdaQueryWrapper<OrderDetail> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(OrderDetail::getOrderId,id);
+        List<OrderDetail> orderDetails = orderDetailService.list(wrapper);
+
+        /*List<ShoppingCart> shoppingCarts = orderDetails.stream().map(item -> {
+            Long dishId = item.getDishId();
+            Long setmealId = item.getSetmealId();
+            if (dishId != null) {
+
+            }
+            return
+        }).collect(Collectors.toList());*/
+
+        return null;
+    }
+
+
 }

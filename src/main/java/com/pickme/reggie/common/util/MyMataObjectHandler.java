@@ -1,7 +1,6 @@
-package com.pickme.reggie.common;
+package com.pickme.reggie.common.util;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
-import com.pickme.reggie.common.util.BaseContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
@@ -26,8 +25,8 @@ public class MyMataObjectHandler implements MetaObjectHandler {
         metaObject.setValue("createTime", LocalDateTime.now());
         metaObject.setValue("updateTime", LocalDateTime.now());
         // BaseContext.getCurrenId() 获取ThreadLoad中储存的登录用户id
-        metaObject.setValue("createUser", BaseContext.getCurrentId());
-        metaObject.setValue("updateUser", BaseContext.getCurrentId());
+        metaObject.setValue("createUser", LocalContext.getCurrentId());
+        metaObject.setValue("updateUser", LocalContext.getCurrentId());
     }
 
     /**
@@ -37,6 +36,6 @@ public class MyMataObjectHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         metaObject.setValue("updateTime", LocalDateTime.now());
-        metaObject.setValue("updateUser", BaseContext.getCurrentId());
+        metaObject.setValue("updateUser", LocalContext.getCurrentId());
     }
 }

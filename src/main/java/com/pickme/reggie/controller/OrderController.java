@@ -3,16 +3,22 @@ package com.pickme.reggie.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
+import com.pickme.reggie.dto.OrdersDto;
 import com.pickme.reggie.pojo.Orders;
 import com.pickme.reggie.service.inter.OrderService;
 import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 /**
  * 订单管理
  */
 @Api(tags = "订单管理")
+@Slf4j
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -49,12 +55,12 @@ public class OrderController {
      * @return
      */
     @GetMapping("/userPage")
-    public Res<Page<Orders>> userPage(Integer page, Integer pageSize) {
-        Page<Orders> p = new Page<>(page,pageSize);
+    public Res<Page<OrdersDto>> userPage(Integer page, Integer pageSize) {
         LambdaQueryWrapper<Orders> wrapper = new LambdaQueryWrapper<>();
         wrapper.orderByDesc(Orders::getCheckoutTime);
-        orderService.page(p,wrapper);
-        return Res.success(p);
+        Page<Orders> ordersPage = new Page<>(page,pageSize);
+        Page<OrdersDto> ordersDtoPage = orderService.pageWithDetail(ordersPage, wrapper);
+        return Res.success(ordersDtoPage);
     }
 
     /**
@@ -64,23 +70,32 @@ public class OrderController {
      * @return
      */
     @GetMapping("/page")
-    public Res<Page<Orders>> page(Integer page, Integer pageSize, Long orderId) {
+    public Res<Page<Orders>> page(Integer page, Integer pageSize, Long number,
+                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
+                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime
+    ) {
+        //log.info("beginTime: {}",beginTime);
+        //log.info("endTime: {}",endTime);
         Page<Orders> p = new Page<>(page,pageSize);
         LambdaQueryWrapper<Orders> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(orderId != null,Orders::getId,orderId);
-        wrapper.orderByDesc(Orders::getCheckoutTime);
+        wrapper
+                .eq(number != null,Orders::getId,number)
+                .ge(beginTime != null,Orders::getOrderTime,beginTime)
+                .le(endTime != null,Orders::getOrderTime,endTime)
+                .orderByDesc(Orders::getOrderTime);
+
         orderService.page(p,wrapper);
         return Res.success(p);
     }
 
     /**
-     * （代开发）根据id查询订单信息，再来一单
+     * （待开发完成）根据id查询订单明细信息并添加至购物车，再来一单
      * @param orders
      * @return
      */
     @PostMapping("/again")
-    public Res<Orders> againOrder(@RequestBody Orders orders) {
-
-        return Res.success(null);
+    public Res<String> againOrder(@RequestBody Orders orders) {
+        orderService.byIdRecurOrders(orders.getId());
+        return Res.success("");
     }
 }

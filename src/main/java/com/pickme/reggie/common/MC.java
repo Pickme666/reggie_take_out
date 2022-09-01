@@ -41,4 +41,12 @@ public class MC {
 
     public static final String E_DELETE_SETMEAL = "当前套餐正在售卖中，不能删除";
 
+    public static final String E_PHONE_NULL = "发送验证码失败，手机号码为空";
+
+    public static final String E_CODE = "验证码错误";
+
+    public static final String E_CAR_NULL = "购物车为空";
+
+    public static final String E_ADDRESS = "地址信息异常，请重试";
+
 }

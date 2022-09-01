@@ -102,7 +102,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
      * @return DishDto
      */
     @Override
-    public DishDto getByWithFlavor(Long id) {
+    public DishDto getByIdWithFlavor(Long id) {
         //根据ID查询菜品的基本信息
         Dish dish = this.getById(id);
         //根据菜品的ID查询菜品口味列表数据

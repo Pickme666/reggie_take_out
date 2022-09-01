@@ -2,7 +2,7 @@ package com.pickme.reggie.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.pickme.reggie.common.Res;
-import com.pickme.reggie.common.util.BaseContext;
+import com.pickme.reggie.common.util.LocalContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 
@@ -60,7 +60,7 @@ public class LoginCheckFilter implements Filter {
         if (request.getSession().getAttribute("employee") != null) {
             //将登录的用户id储存到ThreadLocal中
             Long employeeId = (Long) request.getSession().getAttribute("employee");
-            BaseContext.setCurrentId(employeeId);
+            LocalContext.setCurrentId(employeeId);
             //已登录，放行
             filterChain.doFilter(request,response);
             return;
@@ -70,7 +70,7 @@ public class LoginCheckFilter implements Filter {
         if(request.getSession().getAttribute("user") != null){
 
             Long userId = (Long) request.getSession().getAttribute("user");
-            BaseContext.setCurrentId(userId);
+            LocalContext.setCurrentId(userId);
 
             filterChain.doFilter(request,response);
             log.info("用户已登录，用户id为：{}",userId);

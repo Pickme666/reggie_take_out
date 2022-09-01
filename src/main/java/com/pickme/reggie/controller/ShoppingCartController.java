@@ -2,7 +2,7 @@ package com.pickme.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.pickme.reggie.common.Res;
-import com.pickme.reggie.common.util.BaseContext;
+import com.pickme.reggie.common.util.LocalContext;
 import com.pickme.reggie.pojo.ShoppingCart;
 import com.pickme.reggie.service.inter.ShoppingCartService;
 import io.swagger.annotations.Api;
@@ -32,7 +32,7 @@ public class ShoppingCartController {
      */
     @PostMapping("/add")
     public Res<String> save(@RequestBody ShoppingCart shoppingCart) {
-        Long userId = BaseContext.getCurrentId();
+        Long userId = LocalContext.getCurrentId();
         Long dishId = shoppingCart.getDishId();
         Long setmealId = shoppingCart.getSetmealId();
         //构造条件
@@ -64,7 +64,7 @@ public class ShoppingCartController {
      */
     @PostMapping("/sub")
     public Res<String> remove(@RequestBody ShoppingCart shoppingCart) {
-        Long userId = BaseContext.getCurrentId();
+        Long userId = LocalContext.getCurrentId();
         Long dishId = shoppingCart.getDishId();
         Long setmealId = shoppingCart.getSetmealId();
         LambdaQueryWrapper<ShoppingCart> wrapper = new LambdaQueryWrapper<>();
@@ -90,7 +90,7 @@ public class ShoppingCartController {
      */
     @DeleteMapping("/clean")
     public Res<String> removeAll() {
-        Long userId = BaseContext.getCurrentId();
+        Long userId = LocalContext.getCurrentId();
         LambdaQueryWrapper<ShoppingCart> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(userId != null,ShoppingCart::getUserId,userId);
         shoppingCartService.remove(wrapper);
@@ -103,7 +103,7 @@ public class ShoppingCartController {
      */
     @GetMapping("/list")
     public Res<List<ShoppingCart>> list() {
-        Long userId = BaseContext.getCurrentId();
+        Long userId = LocalContext.getCurrentId();
         LambdaQueryWrapper<ShoppingCart> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(userId != null,ShoppingCart::getUserId,userId);
         wrapper.orderByDesc(ShoppingCart::getCreateTime);

@@ -37,7 +37,7 @@ public interface DishService extends IService<Dish> {
      * 根据id查询
      * @param id
      */
-    DishDto getByWithFlavor(Long id);
+    DishDto getByIdWithFlavor(Long id);
 
     /**
      * 分页查询

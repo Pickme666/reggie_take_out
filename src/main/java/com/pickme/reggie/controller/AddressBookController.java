@@ -3,7 +3,7 @@ package com.pickme.reggie.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.pickme.reggie.common.Res;
-import com.pickme.reggie.common.util.BaseContext;
+import com.pickme.reggie.common.util.LocalContext;
 import com.pickme.reggie.pojo.AddressBook;
 import com.pickme.reggie.service.inter.AddressBookService;
 import io.swagger.annotations.Api;
@@ -30,7 +30,7 @@ public class AddressBookController {
      */
     @PostMapping
     public Res<AddressBook> save(@RequestBody AddressBook addressBook) {
-        Long userId = BaseContext.getCurrentId();
+        Long userId = LocalContext.getCurrentId();
         log.info("addressBook: {}", addressBook);
         addressBook.setUserId(userId);
         addressBookService.save(addressBook);
@@ -42,7 +42,7 @@ public class AddressBookController {
      */
     @PutMapping("default")
     public Res<AddressBook> setDefault(@RequestBody AddressBook addressBook) {
-        Long userId = BaseContext.getCurrentId();
+        Long userId = LocalContext.getCurrentId();
 
         LambdaUpdateWrapper<AddressBook> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(AddressBook::getUserId, userId);
@@ -74,7 +74,7 @@ public class AddressBookController {
      */
     @GetMapping("default")
     public Res<AddressBook> getDefault() {
-        Long userId = BaseContext.getCurrentId();
+        Long userId = LocalContext.getCurrentId();
 
         LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AddressBook::getUserId, userId);
@@ -93,12 +93,12 @@ public class AddressBookController {
      */
     @GetMapping("/list")
     public Res<List<AddressBook>> list() {
-        Long userId = BaseContext.getCurrentId();
+        Long userId = LocalContext.getCurrentId();
         log.info("登录用户id：{}", userId);
 
         //条件构造器
         LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(null!= userId, AddressBook::getUserId, userId);
+        queryWrapper.eq(userId != null, AddressBook::getUserId, userId);
         queryWrapper.orderByDesc(AddressBook::getUpdateTime);
 
         //SQL:select * from address_book where user_id = ? order by update_time desc
