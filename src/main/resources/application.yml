@@ -1,7 +1,7 @@
 # 设置启用环境
 spring:
   profiles:
-    active: pro
+    active: dev
 # 公共配置 ==============================================================================================================
   application:
     # 应用程序的名称（可选）
@@ -71,4 +71,4 @@ server:
   port: 8088
 # TODO 上传文件储存位置
 reggie:
-  path: /root/apps/img
+  path: /root/java_apps/img
