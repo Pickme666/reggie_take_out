@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -31,15 +30,13 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
     @Autowired
-    private RedisTemplate<String,String> redisTemplate;
+    private RedisTemplate<String,String> redisTemplate; //redis数据操作
 
     /**
      * 发送手机验证码
      * @param user
      * @param session
-     * @return
      */
     @PostMapping("/sendMsg")
     public Res<String> sendMsg(@RequestBody User user, HttpSession session) {
@@ -62,7 +59,6 @@ public class UserController {
      * 用户登录验证
      * @param map
      * @param session
-     * @return
      */
     @PostMapping("/login")
     public Res<User> login(@RequestBody Map map, HttpSession session) {
@@ -95,7 +91,6 @@ public class UserController {
     /**
      * 退出登录
      * @param session
-     * @return
      */
     @PostMapping("/loginout")
     public Res<String> loginOut(HttpSession session) {

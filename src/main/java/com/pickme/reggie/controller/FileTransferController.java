@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -33,12 +32,12 @@ public class FileTransferController {
     /**
      * 接收上传的文件，MultipartFile 类是在多部分请求中接收上传文件的表示形式。
      * @param file 接收浏览器上传的文件，这是一个临时文件，如果不转存到指定位置，本次请求完成后临时文件会自动删除
-     * @return
      */
     @PostMapping("/upload")
     public Res<String> upload(MultipartFile file) {
         //获取上传文件名
         String filename = file.getOriginalFilename();
+        if (filename == null) throw new RuntimeException("上传图片错误，请重试");
         //截取上传文件的后缀名
         String suffix = filename.substring(filename.lastIndexOf("."));
         //使用UUID重新生成文件名，防止文件名称重复造成文件覆盖，并拼接上后缀名

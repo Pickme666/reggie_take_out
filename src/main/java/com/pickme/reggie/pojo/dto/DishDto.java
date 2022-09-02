@@ -1,4 +1,4 @@
-package com.pickme.reggie.dto;
+package com.pickme.reggie.pojo.dto;
 
 import com.pickme.reggie.pojo.Dish;
 import com.pickme.reggie.pojo.DishFlavor;

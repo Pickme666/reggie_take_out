@@ -9,7 +9,6 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,7 +27,6 @@ public class ShoppingCartController {
     /**
      * 添加菜品或套餐到购物车
      * @param shoppingCart
-     * @return
      */
     @PostMapping("/add")
     public Res<String> save(@RequestBody ShoppingCart shoppingCart) {
@@ -40,8 +38,8 @@ public class ShoppingCartController {
         wrapper
                 .eq(userId != null,ShoppingCart::getUserId,userId)
                 .eq(dishId != null,ShoppingCart::getDishId,dishId)
-                .eq(setmealId != null,ShoppingCart::getSetmealId,setmealId)
-        ;
+                .eq(setmealId != null,ShoppingCart::getSetmealId,setmealId);
+
         //查询当前菜品或者套餐是否在购物车中
         ShoppingCart cartServiceOne = shoppingCartService.getOne(wrapper);
         if (cartServiceOne != null) {
@@ -54,25 +52,26 @@ public class ShoppingCartController {
             shoppingCart.setCreateTime(LocalDateTime.now());
             shoppingCartService.save(shoppingCart);
         }
+
         return Res.success("");
     }
 
     /**
      * 删除购物车中商品
      * @param shoppingCart
-     * @return
      */
     @PostMapping("/sub")
     public Res<String> remove(@RequestBody ShoppingCart shoppingCart) {
         Long userId = LocalContext.getCurrentId();
         Long dishId = shoppingCart.getDishId();
         Long setmealId = shoppingCart.getSetmealId();
+
         LambdaQueryWrapper<ShoppingCart> wrapper = new LambdaQueryWrapper<>();
         wrapper
                 .eq(userId != null,ShoppingCart::getUserId,userId)
                 .eq(dishId != null,ShoppingCart::getDishId,dishId)
-                .eq(setmealId != null,ShoppingCart::getSetmealId,setmealId)
-        ;
+                .eq(setmealId != null,ShoppingCart::getSetmealId,setmealId);
+
         //判断购物车中是否还存有该商品
         ShoppingCart cartServiceOne = shoppingCartService.getOne(wrapper);
         if (cartServiceOne != null && cartServiceOne.getNumber() > 1) {
@@ -81,12 +80,12 @@ public class ShoppingCartController {
         } else {
             shoppingCartService.remove(wrapper);
         }
+
         return Res.success("");
     }
 
     /**
      * 删除全部商品，清空购物车
-     * @return
      */
     @DeleteMapping("/clean")
     public Res<String> removeAll() {
@@ -96,7 +95,6 @@ public class ShoppingCartController {
 
     /**
      * 查询购物车列表
-     * @return
      */
     @GetMapping("/list")
     public Res<List<ShoppingCart>> list() {

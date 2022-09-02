@@ -10,7 +10,6 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 /**
@@ -39,7 +38,6 @@ public class AddressBookController {
 
     /**
      * 删除地址
-     * @return
      */
     @DeleteMapping()
     public Res<String> remove(Long ids) {
@@ -50,7 +48,6 @@ public class AddressBookController {
     /**
      * 修改地址信息
      * @param addressBook
-     * @return
      */
     @PutMapping
     public Res<String> update(@RequestBody AddressBook addressBook) {

@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pickme.reggie.common.MC;
 import com.pickme.reggie.common.exception.BusinessException;
-import com.pickme.reggie.dto.DishDto;
+import com.pickme.reggie.pojo.dto.DishDto;
 import com.pickme.reggie.mapper.DishMapper;
 import com.pickme.reggie.pojo.Category;
 import com.pickme.reggie.pojo.Dish;
@@ -17,7 +17,6 @@ import com.pickme.reggie.service.inter.DishService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,10 +61,8 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         LambdaQueryWrapper<Dish> dishWrapper = new LambdaQueryWrapper<>();
         dishWrapper.in(Dish::getId,ids);
         dishWrapper.eq(Dish::getStatus,1);
-        if (this.count(dishWrapper) > 0) {
-            throw new BusinessException(MC.E_DELETE_DISH);
-        }
 
+        if (this.count(dishWrapper) > 0) throw new BusinessException(MC.E_DELETE_DISH);
         this.removeByIds(ids);
 
         LambdaQueryWrapper<DishFlavor> flavorWrapper = new LambdaQueryWrapper<>();
@@ -132,17 +129,24 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         BeanUtils.copyProperties(dishPage,dishDtoPage,"records");
         //遍历分页查询的菜品基本信息列表数据，根据分类ID查询分类信息，从而获取该菜品的分类名称
         List<DishDto> dishDtoList = dishList.stream().map((item) -> {
-            long categoryId = item.getCategoryId();     //获取分类id，根据分类id查询分类信息
+            //获取分类id
+            long categoryId = item.getCategoryId();
+            //根据分类id查询分类信息
             Category category = categoryService.getById(categoryId);
-            DishDto dishDto = new DishDto();            //构造 DishDto 对象来封装分类信息
-            BeanUtils.copyProperties(item,dishDto);     //对象拷贝，将菜品基本信息数据拷贝到 DishDto 对象
-            if (category != null) {                     //如果查询的分类信息不为空，设置此菜品的分类名
-                dishDto.setCategoryName(category.getName());
-            }
-            return dishDto;                              //返回 DishDto 对象
-        }).collect(Collectors.toList());                 //返回一个新的集合 List<DishDto> dishDtoList
-        dishDtoPage.setRecords(dishDtoList);             //封装 dishDtoList 列表数据
-        return dishDtoPage;                              //返回 Page<DishDto> 分页模型对象
+            //构造 DishDto 对象来封装分类信息
+            DishDto dishDto = new DishDto();
+            //对象拷贝，将菜品基本信息数据拷贝到 DishDto 对象
+            BeanUtils.copyProperties(item,dishDto);
+            //如果查询的分类信息不为空，设置此菜品的分类名
+            if (category != null) dishDto.setCategoryName(category.getName());
+            //返回 DishDto 对象
+            return dishDto;
+        //返回一个新的集合 List<DishDto> dishDtoList
+        }).collect(Collectors.toList());
+        //封装 dishDtoList 列表数据
+        dishDtoPage.setRecords(dishDtoList);
+        //返回 Page<DishDto> 分页模型对象
+        return dishDtoPage;
     }
 
 }

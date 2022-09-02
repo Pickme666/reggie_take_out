@@ -1,4 +1,4 @@
-package com.pickme.reggie.dto;
+package com.pickme.reggie.pojo.dto;
 
 import com.pickme.reggie.pojo.OrderDetail;
 import com.pickme.reggie.pojo.Orders;

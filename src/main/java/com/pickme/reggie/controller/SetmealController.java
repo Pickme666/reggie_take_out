@@ -3,7 +3,7 @@ package com.pickme.reggie.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
-import com.pickme.reggie.dto.SetmealDto;
+import com.pickme.reggie.pojo.dto.SetmealDto;
 import com.pickme.reggie.pojo.Setmeal;
 import com.pickme.reggie.service.inter.SetmealService;
 import io.swagger.annotations.Api;
@@ -29,7 +29,6 @@ public class SetmealController {
     /**
      * 添加套餐，添加完成后清除缓存的指定分类下的套餐信息
      * @param setmealDto
-     * @return
      */
     @PostMapping
     @CacheEvict(value = "setmealCache",key = "#setmealDto.categoryId")
@@ -42,7 +41,6 @@ public class SetmealController {
     /**
      * 删除或批量删除套餐，@CacheEvict 注解的 allEntries 属性为是否清除指定缓存中的所有数据。
      * @param ids
-     * @return
      */
     @DeleteMapping
     @CacheEvict(value = "setmealCache",allEntries = true)
@@ -55,7 +53,6 @@ public class SetmealController {
     /**
      * 修改套餐信息
      * @param setmealDto
-     * @return
      */
     @PutMapping
     @CacheEvict(value = "setmealCache",allEntries = true)
@@ -85,7 +82,6 @@ public class SetmealController {
     /**
      * 根据id查询，回显套餐信息
      * @param id
-     * @return
      */
     @GetMapping("/{id}")
     public Res<SetmealDto> getObject(@PathVariable Long id) {
@@ -113,7 +109,6 @@ public class SetmealController {
     /**
      * 根据分类id查询套餐列表（移动端）
      * @param setmeal
-     * @return
      */
     @GetMapping("/list")
     @Cacheable(value = "setmealCache",key = "#setmeal.categoryId")

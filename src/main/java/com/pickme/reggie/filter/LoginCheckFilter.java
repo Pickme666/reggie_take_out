@@ -5,7 +5,6 @@ import com.pickme.reggie.common.Res;
 import com.pickme.reggie.common.util.LocalContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
-
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
@@ -86,7 +85,6 @@ public class LoginCheckFilter implements Filter {
      * 路径匹配，检查本次的请求uri是否为不需要过滤处理的请求路径
      * @param urls 请求路径数组
      * @param requestURI 请求uri
-     * @return
      */
     public boolean check(String[] urls,String requestURI) {
         for (String url : urls) {

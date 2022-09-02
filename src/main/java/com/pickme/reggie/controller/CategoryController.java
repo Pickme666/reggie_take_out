@@ -8,7 +8,6 @@ import com.pickme.reggie.service.inter.CategoryService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 /**
@@ -25,7 +24,6 @@ public class CategoryController {
     /**
      * 添加分类
      * @param category
-     * @return
      */
     @PostMapping
     public Res<String> save(@RequestBody Category category) {
@@ -37,7 +35,6 @@ public class CategoryController {
     /**
      * 根据id删除分类
      * @param ids
-     * @return
      */
     @DeleteMapping()
     public Res<String> delete(Long ids) {
@@ -48,7 +45,6 @@ public class CategoryController {
     /**
      * 根据id修改分类信息
      * @param category
-     * @return
      */
     @PutMapping
     public Res<Category> update(@RequestBody Category category) {
@@ -61,7 +57,6 @@ public class CategoryController {
      * 分页查询分类信息
      * @param page
      * @param pageSize
-     * @return
      */
     @GetMapping("/page")
     public Res<Page<Category>> page(Integer page, Integer pageSize) {
@@ -75,7 +70,6 @@ public class CategoryController {
     /**
      * 查询菜品或套餐列表，菜品分类或套餐分类下拉菜单
      * @param category
-     * @return
      */
     @GetMapping("/list")
     public Res<List<Category>> selectList(Category category) {

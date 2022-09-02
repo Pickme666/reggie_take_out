@@ -3,10 +3,9 @@ package com.pickme.reggie.service.inter;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.pickme.reggie.dto.DishDto;
+import com.pickme.reggie.pojo.dto.DishDto;
 import com.pickme.reggie.pojo.Dish;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 public interface DishService extends IService<Dish> {

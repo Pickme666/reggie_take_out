@@ -3,7 +3,7 @@ package com.pickme.reggie.service.inter;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.pickme.reggie.dto.SetmealDto;
+import com.pickme.reggie.pojo.dto.SetmealDto;
 import com.pickme.reggie.pojo.Setmeal;
 import org.springframework.transaction.annotation.Transactional;
 

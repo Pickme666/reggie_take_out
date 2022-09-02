@@ -12,7 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -109,7 +108,6 @@ public class EmployeeController {
     /**
      * 根据id查询员工信息
      * @param id
-     * @return
      */
     @GetMapping("/{id}")
     public Res<Employee> getById(@PathVariable Long id) {
@@ -122,7 +120,6 @@ public class EmployeeController {
      * @param page
      * @param pageSize
      * @param name
-     * @return
      */
     @GetMapping("/page")
     public Res<Page<Employee>> page(Integer page, Integer pageSize, String name) {
@@ -130,6 +127,7 @@ public class EmployeeController {
         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
         //设置模糊查询条件（boolean condition 判断, R column 实体类属性, Object val 要查询的值）
         queryWrapper.like(StringUtils.isNotEmpty(name),Employee::getName,name);
+        //排除 admin 管理员账户
         queryWrapper.ne(Employee::getUsername,"admin");
         //设置排序条件
         queryWrapper.orderByDesc(Employee::getUpdateTime);

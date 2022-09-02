@@ -1,7 +1,6 @@
 package com.pickme.reggie.common;
 
 import lombok.Data;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;

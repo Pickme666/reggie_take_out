@@ -3,7 +3,7 @@ package com.pickme.reggie.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
-import com.pickme.reggie.dto.DishDto;
+import com.pickme.reggie.pojo.dto.DishDto;
 import com.pickme.reggie.pojo.Dish;
 import com.pickme.reggie.service.inter.DishService;
 import io.swagger.annotations.Api;
@@ -29,7 +29,6 @@ public class DishController {
 
     @Autowired
     private DishService dishService;
-
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -38,7 +37,6 @@ public class DishController {
     /**
      * 添加菜品，为了确保数据的一致性，在添加完成后清除缓存
      * @param dishDto
-     * @return
      */
     @PostMapping
     public Res<String> save(@RequestBody DishDto dishDto) {
@@ -56,7 +54,6 @@ public class DishController {
     /**
      * 删除和批量删除菜品
      * @param ids
-     * @return
      */
     @DeleteMapping
     public Res<String> delete(@RequestParam List<Long> ids) {
@@ -72,7 +69,6 @@ public class DishController {
     /**
      * 修改菜品信息，修改完成后，需要清除所有分类菜品缓存数据，因为可能修改的是菜品的分类信息，会导致数据错误
      * @param dishDto
-     * @return
      */
     @PutMapping
     public Res<String> update(@RequestBody DishDto dishDto) {
@@ -90,7 +86,6 @@ public class DishController {
      * 修改和批量修改菜品状态，启售或停售
      * @param s
      * @param ids
-     * @return
      */
     @PostMapping("/status/{s}")
     public Res<String> status(@PathVariable Integer s, Long[] ids) {
@@ -148,7 +143,6 @@ public class DishController {
      * @注意: 在使用缓存过程中，要注意保证数据库中的数据和缓存中的数据一致，如果数据库中的数据发生变化，需要及时清理缓存数据。
      *        否则就会造成缓存数据与数据库数据不一致的情况。
      * @param dish
-     * @return
      */
     @GetMapping("/list")
     public Res<List<DishDto>> list(Dish dish) {
@@ -170,8 +164,7 @@ public class DishController {
                 .eq(categoryId != null,Dish::getCategoryId,categoryId)
                 .like(name != null,Dish::getName,name)
                 .orderByAsc(Dish::getSort)
-                .orderByDesc(Dish::getUpdateTime)
-        ;
+                .orderByDesc(Dish::getUpdateTime);
         List<Dish> list = dishService.list(wrapper);
 
         //遍历集合，查询每个菜品的口味数据

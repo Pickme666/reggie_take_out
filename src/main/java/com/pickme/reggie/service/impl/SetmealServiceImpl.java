@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pickme.reggie.common.MC;
 import com.pickme.reggie.common.exception.BusinessException;
-import com.pickme.reggie.dto.SetmealDto;
+import com.pickme.reggie.pojo.dto.SetmealDto;
 import com.pickme.reggie.mapper.SetmealMapper;
 import com.pickme.reggie.pojo.Category;
 import com.pickme.reggie.pojo.Setmeal;
@@ -17,7 +17,6 @@ import com.pickme.reggie.service.inter.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
