@@ -2,7 +2,6 @@ package com.pickme.reggie.pojo;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 

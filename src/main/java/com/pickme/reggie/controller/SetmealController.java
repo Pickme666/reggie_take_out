@@ -107,7 +107,7 @@ public class SetmealController {
     }
 
     /**
-     * 根据分类id查询套餐列表（移动端）
+     * 根据分类id查询套餐列表（移动端），并缓存套餐列表数据
      * @param setmeal
      */
     @GetMapping("/list")

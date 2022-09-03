@@ -94,6 +94,24 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     }
 
     /**
+     * 修改或批量修改菜品状态
+     * @param sta
+     * @param ids
+     * @return
+     */
+    @Override
+    public boolean updateStatus(Integer sta, Long[] ids) {
+        Dish dish = new Dish();
+        dish.setStatus(sta);
+        //遍历id数组，每次遍历都为Dish对象设置不同的id值
+        for (Long id : ids) {
+            dish.setId(id);
+            this.updateById(dish);
+        }
+        return true;
+    }
+
+    /**
      * 查询菜品基本信息和口味信息，将数据合并为 DishDto 对象返回
      * @param id
      * @return DishDto
@@ -147,6 +165,28 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         dishDtoPage.setRecords(dishDtoList);
         //返回 Page<DishDto> 分页模型对象
         return dishDtoPage;
+    }
+
+    @Override
+    public List<DishDto> listByCategoryId(Dish dish) {
+        Long categoryId = dish.getCategoryId();
+        String name = dish.getName();
+
+        //构造条件
+        LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<>();
+        wrapper
+                .eq(Dish::getStatus,1)
+                .eq(categoryId != null,Dish::getCategoryId,categoryId)
+                .like(name != null,Dish::getName,name)
+                .orderByAsc(Dish::getSort)
+                .orderByDesc(Dish::getUpdateTime);
+        List<Dish> list = this.list(wrapper);
+
+        //遍历集合，查询每个菜品的口味数据
+        return list.stream().map((item) -> {
+            Long dishID = item.getId();
+            return this.getByIdWithFlavor(dishID);
+        }).collect(Collectors.toList());
     }
 
 }

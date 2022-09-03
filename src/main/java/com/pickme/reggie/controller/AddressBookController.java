@@ -1,7 +1,5 @@
 package com.pickme.reggie.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.pickme.reggie.common.Res;
 import com.pickme.reggie.common.util.LocalContext;
 import com.pickme.reggie.pojo.AddressBook;
@@ -26,11 +24,11 @@ public class AddressBookController {
 
     /**
      * 新增
+     * @param addressBook
      */
     @PostMapping
     public Res<AddressBook> save(@RequestBody AddressBook addressBook) {
         Long userId = LocalContext.getCurrentId();
-        log.info("addressBook: {}", addressBook);
         addressBook.setUserId(userId);
         addressBookService.save(addressBook);
         return Res.success(addressBook);
@@ -38,6 +36,7 @@ public class AddressBookController {
 
     /**
      * 删除地址
+     * @param ids
      */
     @DeleteMapping()
     public Res<String> remove(Long ids) {
@@ -57,34 +56,12 @@ public class AddressBookController {
 
     /**
      * 修改默认地址
+     * @param addressBook
      */
     @PutMapping("default")
-    public Res<AddressBook> updateDefault(@RequestBody AddressBook addressBook) {
-        Long userId = LocalContext.getCurrentId();
-
-        LambdaUpdateWrapper<AddressBook> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(AddressBook::getUserId, userId);
-        wrapper.set(AddressBook::getIsDefault, 0);  //设置字段所有值都为0
-
-        //SQL:update address_book set is_default = 0 where user_id = ?
-        addressBookService.update(wrapper);
-
-        addressBook.setIsDefault(1);
-        //SQL:update address_book set is_default = 1 where id = ?
-        addressBookService.updateById(addressBook);
-        return Res.success(addressBook);
-    }
-
-    /**
-     * 根据id查询地址
-     */
-    @GetMapping("/{id}")
-    public Res get(@PathVariable Long id) {
-        AddressBook addressBook = addressBookService.getById(id);
-        if (addressBook == null) {
-            return Res.error("没有找到该对象");
-        }
-        return Res.success(addressBook);
+    public Res<AddressBook> updateIsDefault(@RequestBody AddressBook addressBook) {
+        AddressBook isDefaultAddress = addressBookService.updateDefaultAddress(addressBook);
+        return Res.success(isDefaultAddress);
     }
 
     /**
@@ -92,17 +69,18 @@ public class AddressBookController {
      */
     @GetMapping("default")
     public Res<AddressBook> getDefault() {
-        Long userId = LocalContext.getCurrentId();
+        AddressBook defaultAddress = addressBookService.getDefaultAddress();
+        return Res.success(defaultAddress);
+    }
 
-        LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(AddressBook::getUserId, userId);
-        queryWrapper.eq(AddressBook::getIsDefault, 1);
-
-        //SQL:select * from address_book where user_id = ? and is_default = 1
-        AddressBook addressBook = addressBookService.getOne(queryWrapper);
-        if (null == addressBook) {
-            return Res.error("没有找到该对象");
-        }
+    /**
+     * 根据id查询地址
+     * @param id
+     */
+    @GetMapping("/{id}")
+    public Res<AddressBook> get(@PathVariable Long id) {
+        AddressBook addressBook = addressBookService.getById(id);
+        if (addressBook == null) return Res.error("没有找到该对象");
         return Res.success(addressBook);
     }
 
@@ -111,16 +89,7 @@ public class AddressBookController {
      */
     @GetMapping("/list")
     public Res<List<AddressBook>> list() {
-        Long userId = LocalContext.getCurrentId();
-        log.info("登录用户id：{}", userId);
-
-        //条件构造器
-        LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(userId != null, AddressBook::getUserId, userId);
-        queryWrapper.orderByDesc(AddressBook::getUpdateTime);
-
-        //SQL:select * from address_book where user_id = ? order by update_time desc
-        List<AddressBook> list = addressBookService.list(queryWrapper);
-        return Res.success(list);
+        List<AddressBook> allAddress = addressBookService.listAddress();
+        return Res.success(allAddress);
     }
 }

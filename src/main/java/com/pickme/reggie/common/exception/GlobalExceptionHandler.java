@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Res<String> exceptionHandler(Exception ex) {
         ex.printStackTrace();
-        return Res.error(MC.E_UNKNOWN + ex.getMessage());
+        return Res.error(MC.E_UNKNOWN);
     }
 
     /**

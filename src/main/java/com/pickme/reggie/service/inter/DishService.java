@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.pickme.reggie.pojo.dto.DishDto;
 import com.pickme.reggie.pojo.Dish;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.List;
 
 public interface DishService extends IService<Dish> {
@@ -33,6 +35,15 @@ public interface DishService extends IService<Dish> {
 
 
     /**
+     * 修改状态
+     * @param s
+     * @param ids
+     */
+    @Transactional
+    boolean updateStatus(Integer sta, Long[] ids);
+
+
+    /**
      * 根据id查询
      * @param id
      */
@@ -44,5 +55,11 @@ public interface DishService extends IService<Dish> {
      * @param wrapper
      */
     Page<DishDto> pageWithCategory(Page<Dish> dishPage, Wrapper<Dish> wrapper);
+
+    /**
+     * 根据分类id查询菜品（移动端）
+     * @param dish
+     */
+    List<DishDto> listByCategoryId(Dish dish);
 
 }

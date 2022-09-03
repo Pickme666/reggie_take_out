@@ -1,6 +1,5 @@
 package com.pickme.reggie.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
 import com.pickme.reggie.pojo.dto.OrdersDto;
@@ -31,7 +30,7 @@ public class OrderController {
      */
     @PostMapping("/submit")
     public Res<String> submit(@RequestBody Orders orders) {
-        orderService.submit(orders);
+        orderService.saveSubmitOrders(orders);
         return Res.success("");
     }
 
@@ -52,10 +51,7 @@ public class OrderController {
      */
     @GetMapping("/userPage")
     public Res<Page<OrdersDto>> userPage(Integer page, Integer pageSize) {
-        LambdaQueryWrapper<Orders> wrapper = new LambdaQueryWrapper<>();
-        wrapper.orderByDesc(Orders::getCheckoutTime);
-        Page<Orders> ordersPage = new Page<>(page,pageSize);
-        Page<OrdersDto> ordersDtoPage = orderService.pageWithDetail(ordersPage, wrapper);
+        Page<OrdersDto> ordersDtoPage = orderService.pageOrdersWithDetail(page, pageSize);
         return Res.success(ordersDtoPage);
     }
 
@@ -69,15 +65,7 @@ public class OrderController {
                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date beginTime,
                                   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endTime
     ) {
-        Page<Orders> p = new Page<>(page,pageSize);
-        LambdaQueryWrapper<Orders> wrapper = new LambdaQueryWrapper<>();
-        wrapper
-                .eq(number != null,Orders::getId,number)
-                .ge(beginTime != null,Orders::getOrderTime,beginTime)
-                .le(endTime != null,Orders::getOrderTime,endTime)
-                .orderByDesc(Orders::getOrderTime);
-
-        orderService.page(p,wrapper);
+        Page<Orders> p = orderService.pageOrders(page, pageSize, number, beginTime, endTime);
         return Res.success(p);
     }
 
@@ -87,7 +75,7 @@ public class OrderController {
      */
     @PostMapping("/again")
     public Res<String> againOrder(@RequestBody Orders orders) {
-        orderService.byIdRecurOrders(orders.getId());
+        orderService.getByIdAgainOrders(orders.getId());
         return Res.success("");
     }
 }

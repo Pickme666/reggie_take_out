@@ -21,28 +21,33 @@ public class Res<T> implements Serializable {
     //数据
     private T data;
 
-    //动态数据
-    private Map map = new HashMap();
 
-    //成功 code = 1
+    /**
+     * 成功 code = 1
+     */
     public static <T> Res<T> success(T object) {
         Res<T> res = new Res<>();
-        res.data = object;
         res.code = 1;
+        res.data = object;
         return res;
     }
 
-    //失败 code = 0
+    public static <T> Res<T> success(T object, String msg) {
+        Res<T> res = new Res<>();
+        res.code = 1;
+        res.data = object;
+        res.msg = msg;
+        return res;
+    }
+
+
+    /**
+     * 失败 code = 0
+     */
     public static <T> Res<T> error(String msg) {
         Res<T> res = new Res<>();
-        res.msg = msg;
         res.code = 0;
+        res.msg = msg;
         return res;
-    }
-
-    //操作动态数据
-    public Res<T> add(String key, Object value) {
-        this.map.put(key, value);
-        return this;
     }
 }

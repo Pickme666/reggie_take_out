@@ -6,15 +6,15 @@ package com.pickme.reggie.common;
 
 public class MC {
 
-    //账号默认密码
+    /**
+     * 账号默认密码
+     */
     public static final String DEFAULT_PWD = "123456";
 
 
     /**
      * 成功
      */
-
-    public static final String S_LOGIN = "员工登录成功，用户名：";
 
     public static final String S_INSERT = "添加成功";
 
@@ -35,7 +35,7 @@ public class MC {
 
     public static final String E_USERNAME_EXIST = "账号已存在";
 
-    public static final String E_UNKNOWN = "未知错误：";
+    public static final String E_UNKNOWN = "未知错误：系统出现问题";
 
     public static final String E_DELETE_DISH = "当前菜品正在售卖中，不能删除";
 
