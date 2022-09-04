@@ -1,6 +1,5 @@
 package com.pickme.reggie.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
 import com.pickme.reggie.pojo.Category;
@@ -38,7 +37,7 @@ public class CategoryController {
      */
     @DeleteMapping()
     public Res<String> delete(Long ids) {
-        categoryService.remove(ids);
+        categoryService.removeCategory(ids);
         return Res.success("");
     }
 
@@ -60,10 +59,7 @@ public class CategoryController {
      */
     @GetMapping("/page")
     public Res<Page<Category>> page(Integer page, Integer pageSize) {
-        Page<Category> p = new Page<>(page,pageSize);
-        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.orderByDesc(Category::getUpdateTime);
-        categoryService.page(p,queryWrapper);
+        Page<Category> p = categoryService.pageCategory(new Page<>(page, pageSize));
         return Res.success(p);
     }
 
@@ -73,11 +69,7 @@ public class CategoryController {
      */
     @GetMapping("/list")
     public Res<List<Category>> selectList(Category category) {
-        LambdaQueryWrapper<Category> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(category.getType() != null, Category::getType, category.getType());
-        //按sort字段排除，如果顺序相同，再按修改时间排序
-        wrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
-        List<Category> list = categoryService.list(wrapper);
+        List<Category> list = categoryService.listCategoryOrSetmeal(category);
         return Res.success(list);
     }
 }

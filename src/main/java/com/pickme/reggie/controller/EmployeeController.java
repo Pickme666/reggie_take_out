@@ -1,6 +1,5 @@
 package com.pickme.reggie.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.MC;
 import com.pickme.reggie.common.Res;
@@ -8,9 +7,7 @@ import com.pickme.reggie.pojo.Employee;
 import com.pickme.reggie.service.inter.EmployeeService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,24 +30,12 @@ public class EmployeeController {
      */
     @PostMapping("/login")
     public Res<Employee> login(@RequestBody Employee employee, HttpServletRequest request) {
-        //将页码提交的密码进行md5加密
-        String password = employee.getPassword();
-        password = DigestUtils.md5DigestAsHex(password.getBytes());
-
-        //设置条件，查询数据
-        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Employee::getUsername,employee.getUsername());
-        Employee emp = employeeService.getOne(queryWrapper);
-
-        //数据比对
-        if (emp == null)                            return Res.error(MC.E_LOGIN_NO_NAME);
-        if (!emp.getPassword().equals(password))    return Res.error(MC.E_LOGIN_PWD);
-        if (emp.getStatus() == 0)                   return Res.error(MC.E_LOGIN_DISABLED);
+        Employee emp = employeeService.employeeLogin(employee);
 
         //登录成功，将员工id存入到服务端Session中
         request.getSession().setAttribute("employee",emp.getId());
+        log.info("员工登录成功，用户名：{}",emp.getUsername());
 
-        log.info(MC.S_LOGIN + emp.getUsername());
         return Res.success(emp);
     }
 
@@ -69,20 +54,10 @@ public class EmployeeController {
     /**
      * 添加员工
      * @param employee
-     * @param request
      */
     @PostMapping
-    public Res<String> save(@RequestBody Employee employee, HttpServletRequest request) {
-        //查询账号是否已存在
-        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Employee::getUsername,employee.getUsername());
-        if (employeeService.getOne(queryWrapper) != null) return Res.error(MC.E_USERNAME_EXIST);
-
-        //设置初始密码为123456，并进行md5加密
-        String pwd = DigestUtils.md5DigestAsHex(MC.DEFAULT_PWD.getBytes());
-        employee.setPassword(pwd);
-
-        employeeService.save(employee);
+    public Res<String> save(@RequestBody Employee employee) {
+        employeeService.saveEmployee(employee);
         return Res.success(MC.S_INSERT);
     }
 
@@ -123,15 +98,7 @@ public class EmployeeController {
      */
     @GetMapping("/page")
     public Res<Page<Employee>> page(Integer page, Integer pageSize, String name) {
-        Page<Employee> p = new Page<>(page,pageSize);
-        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
-        //设置模糊查询条件（boolean condition 判断, R column 实体类属性, Object val 要查询的值）
-        queryWrapper.like(StringUtils.isNotEmpty(name),Employee::getName,name);
-        //排除 admin 管理员账户
-        queryWrapper.ne(Employee::getUsername,"admin");
-        //设置排序条件
-        queryWrapper.orderByDesc(Employee::getUpdateTime);
-        employeeService.page(p,queryWrapper);
+        Page<Employee> p = employeeService.pageEmployees(page, pageSize, name);
         return Res.success(p);
     }
 }

@@ -1,6 +1,5 @@
 package com.pickme.reggie.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -40,7 +40,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
      * @param orders
      */
     @Override
-    public boolean submit(Orders orders) {
+    public boolean saveSubmitOrders(Orders orders) {
 
         //获得当前用户id, 查询当前用户的购物车数据
         Long userId = LocalContext.getCurrentId();
@@ -104,15 +104,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     }
 
     /**
-     * 查询订单列表及明细
-     * @param ordersPage
-     * @param wrapper
+     * 分页查询订单列表及明细
+     * @param page
+     * @param pageSize
      * @return
      */
     @Override
-    public Page<OrdersDto> pageWithDetail(Page<Orders> ordersPage, Wrapper<Orders> wrapper) {
+    public Page<OrdersDto> pageOrdersWithDetail(Integer page, Integer pageSize) {
 
+        Page<Orders> ordersPage = new Page<>(page,pageSize);
         Page<OrdersDto> dtoPage = new Page<>();
+
+        LambdaQueryWrapper<Orders> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByDesc(Orders::getCheckoutTime);
         List<Orders> ordersList = this.page(ordersPage, wrapper).getRecords();
         BeanUtils.copyProperties(ordersPage,dtoPage,"records");
 
@@ -134,13 +138,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         return dtoPage;
     }
 
+    @Override
+    public Page<Orders> pageOrders(Integer page, Integer pageSize, Long number, Date beginTime, Date endTime) {
+        Page<Orders> p = new Page<>(page,pageSize);
+        LambdaQueryWrapper<Orders> wrapper = new LambdaQueryWrapper<>();
+        wrapper
+                .eq(number != null,Orders::getId,number)
+                .ge(beginTime != null,Orders::getOrderTime,beginTime)
+                .le(endTime != null,Orders::getOrderTime,endTime)
+                .orderByDesc(Orders::getOrderTime);
+
+        return this.page(p,wrapper);
+    }
+
     /**
      * 再来一单，重新添加当前订单的商品信息到购物车
      * @param id
      * @return
      */
     @Override
-    public boolean byIdRecurOrders(Long id) {
+    public boolean getByIdAgainOrders(Long id) {
 
         //查询订单明细列表
         LambdaQueryWrapper<OrderDetail> wrapper = new LambdaQueryWrapper<>();
@@ -148,7 +165,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         List<OrderDetail> orderDetails = orderDetailService.list(wrapper);
 
         //清空当前购物车
-        shoppingCartService.cleanCart();
+        shoppingCartService.removeAllCart();
 
         //遍历订单明细列表，设置购物车信息
         List<ShoppingCart> shoppingCarts = orderDetails.stream().map(item -> {

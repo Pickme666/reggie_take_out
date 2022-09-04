@@ -59,7 +59,9 @@ public class DishController {
     public Res<String> delete(@RequestParam List<Long> ids) {
         dishService.removeWithFlavor(ids);
 
+        //获取所有指定匹配内容的key，* 代表匹配任意字符
         Set keys = redisTemplate.keys(DISH_LIST + "*");
+        //清理此所有缓存
         redisTemplate.delete(keys);
 
         return Res.success("");
@@ -74,9 +76,7 @@ public class DishController {
     public Res<String> update(@RequestBody DishDto dishDto) {
         dishService.updateWithFlavor(dishDto);
 
-        //获取所有指定匹配内容的key，* 代表匹配任意字符
         Set keys = redisTemplate.keys(DISH_LIST + "*");
-        //清理此所有缓存
         redisTemplate.delete(keys);
 
         return Res.success("");
@@ -87,15 +87,9 @@ public class DishController {
      * @param s
      * @param ids
      */
-    @PostMapping("/status/{s}")
-    public Res<String> status(@PathVariable Integer s, Long[] ids) {
-        Dish dish = new Dish();
-        dish.setStatus(s);
-        //遍历id数组，每次遍历都为Dish对象设置不同的id值
-        for (Long id : ids) {
-            dish.setId(id);
-            dishService.updateById(dish);
-        }
+    @PostMapping("/status/{sta}")
+    public Res<String> status(@PathVariable Integer sta, Long[] ids) {
+        dishService.updateStatus(sta,ids);
 
         Set keys = redisTemplate.keys(DISH_LIST + "*");
         redisTemplate.delete(keys);
@@ -146,35 +140,21 @@ public class DishController {
      */
     @GetMapping("/list")
     public Res<List<DishDto>> list(Dish dish) {
-        Long categoryId = dish.getCategoryId();
-        String name = dish.getName();
 
-        List<DishDto> dtoList = null;
         //动态设置key
-        String key = DISH_LIST + categoryId;
+        String key = DISH_LIST + dish.getCategoryId();
         //先从redis中获取缓存的菜品数据
-        dtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
+        List<DishDto> dtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
+
         //如果有缓存数据，直接return
-        if (dtoList != null) return Res.success(dtoList);
-
-        //构造条件
-        LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<>();
-        wrapper
-                .eq(Dish::getStatus,1)
-                .eq(categoryId != null,Dish::getCategoryId,categoryId)
-                .like(name != null,Dish::getName,name)
-                .orderByAsc(Dish::getSort)
-                .orderByDesc(Dish::getUpdateTime);
-        List<Dish> list = dishService.list(wrapper);
-
-        //遍历集合，查询每个菜品的口味数据
-        dtoList = list.stream().map((item) -> {
-            Long dishID = item.getId();
-            return dishService.getByIdWithFlavor(dishID);
-        }).collect(Collectors.toList());
-
-        //如果没有缓存菜品数据，将查询的菜品数据缓存在redis中，设置60分钟有效时间
-        redisTemplate.opsForValue().set(key,dtoList,60, TimeUnit.MINUTES);
+        if (dtoList != null) {
+            return Res.success(dtoList);
+        } else {
+            //如果没有缓存菜品数据，查询菜品数据
+            dtoList = dishService.listByCategoryId(dish);
+            //将查询的菜品数据缓存在redis中，设置60分钟有效时间
+            redisTemplate.opsForValue().set(key,dtoList,60, TimeUnit.MINUTES);
+        }
 
         return Res.success(dtoList);
     }
