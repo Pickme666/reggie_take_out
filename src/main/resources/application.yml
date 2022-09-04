@@ -2,7 +2,10 @@
 spring:
   profiles:
     active: dev
+
 # 公共配置 ==============================================================================================================
+---
+spring:
   application:
     # 应用程序的名称（可选）
     name: reggie_take_out
@@ -13,62 +16,5 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
+      # Mybatis-plus id生成策略
       id-type: ASSIGN_ID
-
-
-# 开发环境配置 ===========================================================================================================
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-  datasource:
-    druid:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-      username: root
-      password: 123456
-  # TODO 解决运行springboot时修改静态资源不实时更新
-  thymeleaf:
-    cache: false # 关闭 Thymeleaf 模板引擎缓存
-  # redis 相关配置
-  redis:
-    host: localhost
-    port: 6379
-    #password: 123456
-    database: 1
-  cache:
-    redis:
-      # 设置缓存数据的过期时间（单位：毫秒）
-      time-to-live: 3600000
-# TODO 上传文件储存位置
-reggie:
-  path: E:\BaiduNetdiskDownload\reggie_img\
-
-
-# 生产环境配置 ===========================================================================================================
----
-spring:
-  config:
-    activate:
-      on-profile: pro
-  datasource:
-    druid:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://192.168.100.66:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-      username: root
-      password: 123456
-  # redis 相关配置
-  redis:
-    host: 192.168.100.66
-    port: 6379
-    password: 123456
-    database: 0
-  cache:
-    redis:
-      time-to-live: 3600000
-server:
-  port: 8088
-# TODO 上传文件储存位置
-reggie:
-  path: /root/java_apps/img
