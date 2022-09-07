@@ -22,6 +22,8 @@ public class MC {
 
     public static final String S_UPDATE = "修改成功";
 
+    public static final String S_SEND_MSG = "短信发送成功";
+
 
     /**
      * 失败
@@ -48,5 +50,7 @@ public class MC {
     public static final String E_CAR_NULL = "购物车为空";
 
     public static final String E_ADDRESS = "地址信息异常，请重试";
+
+    public static final String E_IMG = "上传图片错误，请重试";
 
 }

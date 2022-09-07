@@ -1,14 +1,14 @@
 # 设置启用环境
 spring:
   profiles:
-    active: dev
+    active: @profile.active@
 
 # 公共配置 ==============================================================================================================
 ---
 spring:
   application:
     # 应用程序的名称（可选）
-    name: reggie_take_out
+    name: nh_food_hall
 mybatis-plus:
   configuration:
     #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射 address_book --> AddressBook

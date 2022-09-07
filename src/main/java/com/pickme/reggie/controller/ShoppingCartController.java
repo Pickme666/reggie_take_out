@@ -2,7 +2,7 @@ package com.pickme.reggie.controller;
 
 import com.pickme.reggie.common.Res;
 import com.pickme.reggie.pojo.ShoppingCart;
-import com.pickme.reggie.service.inter.ShoppingCartService;
+import com.pickme.reggie.service.ShoppingCartService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,22 +1,25 @@
 package com.pickme.reggie.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pickme.reggie.common.MC;
 import com.pickme.reggie.common.exception.BusinessException;
-import com.pickme.reggie.pojo.dto.DishDto;
 import com.pickme.reggie.mapper.DishMapper;
 import com.pickme.reggie.pojo.Category;
 import com.pickme.reggie.pojo.Dish;
 import com.pickme.reggie.pojo.DishFlavor;
-import com.pickme.reggie.service.inter.CategoryService;
-import com.pickme.reggie.service.inter.DishFlavorService;
-import com.pickme.reggie.service.inter.DishService;
+import com.pickme.reggie.pojo.dto.DishDto;
+import com.pickme.reggie.service.CategoryService;
+import com.pickme.reggie.service.DishFlavorService;
+import com.pickme.reggie.service.DishService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +37,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
      * @return
      */
     @Override
+    @CacheEvict(value = "DishCache",key = "#dishDto.categoryId")
     public boolean saveWithFlavor(DishDto dishDto) {
         //保存菜品基本信息
         this.save(dishDto);
@@ -57,6 +61,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
      * @return
      */
     @Override
+    @CacheEvict(value = "DishCache",allEntries = true)
     public boolean removeWithFlavor(List<Long> ids) {
         LambdaQueryWrapper<Dish> dishWrapper = new LambdaQueryWrapper<>();
         dishWrapper.in(Dish::getId,ids);
@@ -76,6 +81,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
      * @return
      */
     @Override
+    @CacheEvict(value = "DishCache",allEntries = true)
     public boolean updateWithFlavor(DishDto dishDto) {
         long id = dishDto.getId();
         //修改菜品基本数据
@@ -100,6 +106,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
      * @return
      */
     @Override
+    @CacheEvict(value = "DishCache",allEntries = true)
     public boolean updateStatus(Integer sta, Long[] ids) {
         Dish dish = new Dish();
         dish.setStatus(sta);
@@ -133,41 +140,50 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     /**
      * 分页查询菜品的分类信息，并和菜品的基本信息合并，返回一个新的分页模型对象
-     * @param dishPage 菜品基本信息分页对象
-     * @param wrapper 分页条件
+     * @param page
+     * @param pageSize
+     * @param name
      * @return 泛型为 DishDto 的 Page
      */
     @Override
-    public Page<DishDto> pageWithCategory(Page<Dish> dishPage, Wrapper<Dish> wrapper) {
+    public Page<DishDto> pageWithCategory(Integer page, Integer pageSize, String name) {
+
+        //设置分页查询条件
+        LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<>();
+        wrapper.like(StringUtils.isNotEmpty(name),Dish::getName,name);
+        wrapper.orderByDesc(Dish::getUpdateTime);
+
+        //构造分页模型对象，分页查询菜品基本信息
+        Page<Dish> dishPage = new Page<>(page, pageSize);
         //构造一个泛型为 DishDto 的分页模型对象
         Page<DishDto> dishDtoPage = new Page<>();
         //执行分页条件查询，并返回查询数据列表
         List<Dish> dishList = this.page(dishPage, wrapper).getRecords();
         //对象拷贝，将dishPage的封装的数据拷贝到dishDtoPage拷贝，排除 records 属性
         BeanUtils.copyProperties(dishPage,dishDtoPage,"records");
+
         //遍历分页查询的菜品基本信息列表数据，根据分类ID查询分类信息，从而获取该菜品的分类名称
         List<DishDto> dishDtoList = dishList.stream().map((item) -> {
-            //获取分类id
-            long categoryId = item.getCategoryId();
-            //根据分类id查询分类信息
-            Category category = categoryService.getById(categoryId);
             //构造 DishDto 对象来封装分类信息
             DishDto dishDto = new DishDto();
             //对象拷贝，将菜品基本信息数据拷贝到 DishDto 对象
             BeanUtils.copyProperties(item,dishDto);
+            //根据分类id查询分类信息
+            Category category = categoryService.getById(item.getCategoryId());
             //如果查询的分类信息不为空，设置此菜品的分类名
             if (category != null) dishDto.setCategoryName(category.getName());
             //返回 DishDto 对象
             return dishDto;
         //返回一个新的集合 List<DishDto> dishDtoList
         }).collect(Collectors.toList());
-        //封装 dishDtoList 列表数据
+
+        //封装 dishDtoList 列表数据到 Page<DishDto> 分页模型对象并返回
         dishDtoPage.setRecords(dishDtoList);
-        //返回 Page<DishDto> 分页模型对象
         return dishDtoPage;
     }
 
     @Override
+    @Cacheable(value = "DishCache",key = "#dish.categoryId")
     public List<DishDto> listByCategoryId(Dish dish) {
         Long categoryId = dish.getCategoryId();
         String name = dish.getName();

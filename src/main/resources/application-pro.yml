@@ -7,7 +7,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       url: jdbc:mysql://192.168.100.66:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: root
-      password: 123456
+      password: "123456"
   # redis 相关配置
   redis:
     host: 192.168.100.66
@@ -23,4 +23,4 @@ spring:
       enabled: false
 # TODO 上传文件储存位置
 reggie:
-  path: /root/java_apps/img
+  path: /root/pickme/img

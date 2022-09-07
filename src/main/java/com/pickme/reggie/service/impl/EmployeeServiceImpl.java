@@ -4,10 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pickme.reggie.common.MC;
-import com.pickme.reggie.common.Res;
 import com.pickme.reggie.mapper.EmployeeMapper;
 import com.pickme.reggie.pojo.Employee;
-import com.pickme.reggie.service.inter.EmployeeService;
+import com.pickme.reggie.service.EmployeeService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -41,7 +40,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper,Employee> im
         queryWrapper.eq(Employee::getUsername,employee.getUsername());
         if (this.getOne(queryWrapper) != null) throw new RuntimeException(MC.E_USERNAME_EXIST);
 
-        //设置初始密码为123456，并进行md5加密
+        //设置初始密码，并进行md5加密
         String pwd = DigestUtils.md5DigestAsHex(MC.DEFAULT_PWD.getBytes());
         employee.setPassword(pwd);
 

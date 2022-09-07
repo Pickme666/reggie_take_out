@@ -6,7 +6,7 @@
 }
 
 #main .divHead {
-  background: url(../images/mainBg.png);
+  background: url(../images/img_denglu_bj.jpg);
   background-repeat: no-repeat;
   height: 152rem;
   background-size: contain;
@@ -47,7 +47,7 @@
 }
 
 #main .divTitle .divStatic .divDesc .divName {
-  width: 90rem;
+  /*width: 90rem;*/
   height: 25rem;
   opacity: 1;
   font-size: 18rem;

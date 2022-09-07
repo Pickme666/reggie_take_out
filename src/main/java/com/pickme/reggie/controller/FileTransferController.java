@@ -1,5 +1,6 @@
 package com.pickme.reggie.controller;
 
+import com.pickme.reggie.common.MC;
 import com.pickme.reggie.common.Res;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public class FileTransferController {
     public Res<String> upload(MultipartFile file) {
         //获取上传文件名
         String filename = file.getOriginalFilename();
-        if (filename == null) throw new RuntimeException("上传图片错误，请重试");
+        if (filename == null) throw new RuntimeException(MC.E_IMG);
         //截取上传文件的后缀名
         String suffix = filename.substring(filename.lastIndexOf("."));
         //使用UUID重新生成文件名，防止文件名称重复造成文件覆盖，并拼接上后缀名

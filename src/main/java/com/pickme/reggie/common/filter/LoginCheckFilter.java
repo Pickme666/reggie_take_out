@@ -1,4 +1,4 @@
-package com.pickme.reggie.filter;
+package com.pickme.reggie.common.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.pickme.reggie.common.Res;

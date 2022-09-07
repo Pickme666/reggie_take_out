@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
 import com.pickme.reggie.pojo.dto.DishDto;
 import com.pickme.reggie.pojo.Dish;
-import com.pickme.reggie.service.inter.DishService;
+import com.pickme.reggie.service.DishService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * 菜品管理
@@ -29,10 +28,10 @@ public class DishController {
 
     @Autowired
     private DishService dishService;
-    @Autowired
-    private RedisTemplate redisTemplate;
 
-    private final String DISH_LIST = "dish_list_"; // key 前缀名
+    /*@Autowired
+    private RedisTemplate redisTemplate;
+    private final String DISH_LIST = "dish_list_"; // key 前缀名*/
 
     /**
      * 添加菜品，为了确保数据的一致性，在添加完成后清除缓存
@@ -42,10 +41,10 @@ public class DishController {
     public Res<String> save(@RequestBody DishDto dishDto) {
         dishService.saveWithFlavor(dishDto);
 
-        //设置当前分类id的key
+        /*//设置当前分类id的key
         String key = DISH_LIST + dishDto.getCategoryId();
         //清除当前分类的菜品缓存数据
-        redisTemplate.delete(key);
+        redisTemplate.delete(key);*/
 
         return Res.success("");
     }
@@ -59,25 +58,25 @@ public class DishController {
     public Res<String> delete(@RequestParam List<Long> ids) {
         dishService.removeWithFlavor(ids);
 
-        //获取所有指定匹配内容的key，* 代表匹配任意字符
+        /*//获取所有指定匹配内容的key，* 代表匹配任意字符
         Set keys = redisTemplate.keys(DISH_LIST + "*");
         //清理此所有缓存
-        redisTemplate.delete(keys);
+        redisTemplate.delete(keys);*/
 
         return Res.success("");
     }
 
 
     /**
-     * 修改菜品信息，修改完成后，需要清除所有分类菜品缓存数据，因为可能修改的是菜品的分类信息，会导致数据错误
+     * 修改菜品信息，修改完成后需要清除所有分类菜品缓存数据，因为如果修改的是菜品的分类信息，可能会导致数据错误
      * @param dishDto
      */
     @PutMapping
     public Res<String> update(@RequestBody DishDto dishDto) {
         dishService.updateWithFlavor(dishDto);
 
-        Set keys = redisTemplate.keys(DISH_LIST + "*");
-        redisTemplate.delete(keys);
+        /*Set keys = redisTemplate.keys(DISH_LIST + "*");
+        redisTemplate.delete(keys);*/
 
         return Res.success("");
     }
@@ -91,8 +90,8 @@ public class DishController {
     public Res<String> status(@PathVariable Integer sta, Long[] ids) {
         dishService.updateStatus(sta,ids);
 
-        Set keys = redisTemplate.keys(DISH_LIST + "*");
-        redisTemplate.delete(keys);
+        /*Set keys = redisTemplate.keys(DISH_LIST + "*");
+        redisTemplate.delete(keys);*/
 
         return Res.success("");
     }
@@ -118,16 +117,7 @@ public class DishController {
      */
     @GetMapping("/page")
     public Res<Page<DishDto>> page(Integer page, Integer pageSize, String name) {
-        //设置分页查询条件
-        LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(StringUtils.isNotEmpty(name),Dish::getName,name);
-        wrapper.orderByDesc(Dish::getUpdateTime);
-
-        //构造分页模型对象，分页查询菜品基本信息
-        Page<Dish> dishPage = new Page<>(page, pageSize);
-        //调用业务层方法，返回带有菜品基本信息和分类信息的 Page<DishDto> 对象
-        Page<DishDto> dishDtoPage = dishService.pageWithCategory(dishPage, wrapper);
-        //返回 dishDtoPage
+        Page<DishDto> dishDtoPage = dishService.pageWithCategory(page, pageSize, name);
         return Res.success(dishDtoPage);
     }
 
@@ -141,7 +131,7 @@ public class DishController {
     @GetMapping("/list")
     public Res<List<DishDto>> list(Dish dish) {
 
-        //动态设置key
+        /*//动态设置key
         String key = DISH_LIST + dish.getCategoryId();
         //先从redis中获取缓存的菜品数据
         List<DishDto> dtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
@@ -154,8 +144,9 @@ public class DishController {
             dtoList = dishService.listByCategoryId(dish);
             //将查询的菜品数据缓存在redis中，设置60分钟有效时间
             redisTemplate.opsForValue().set(key,dtoList,60, TimeUnit.MINUTES);
-        }
+        }*/
 
-        return Res.success(dtoList);
+        List<DishDto> DishDtoList = dishService.listByCategoryId(dish);
+        return Res.success(DishDtoList);
     }
 }

@@ -8,9 +8,9 @@ import com.pickme.reggie.mapper.CategoryMapper;
 import com.pickme.reggie.pojo.Category;
 import com.pickme.reggie.pojo.Dish;
 import com.pickme.reggie.pojo.Setmeal;
-import com.pickme.reggie.service.inter.CategoryService;
-import com.pickme.reggie.service.inter.DishService;
-import com.pickme.reggie.service.inter.SetmealService;
+import com.pickme.reggie.service.CategoryService;
+import com.pickme.reggie.service.DishService;
+import com.pickme.reggie.service.SetmealService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
