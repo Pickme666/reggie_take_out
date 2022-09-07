@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
-    <title>菩提阁</title>
+    <title>南华味来美食馆</title>
     <link rel="icon" href="images/favico.ico">
     <!--不同屏幕尺寸根字体设置-->
     <script src="./js/base.js"></script>
@@ -27,16 +27,16 @@
         <div class="divStatic">
           <img src="./images/logo.png"  class="logo"/>
           <div class="divDesc">
-            <div class="divName">菩提阁餐厅</div>
+            <div class="divName">南华味来美食馆</div>
             <div class="divSend">
-                <span><img src="./images/time.png"/> 距离1.5km</span>
-                <span><img src="./images/money.png"/> 配送费6元</span>
-                <span><img src="./images/location.png"/> 预计时长12min</span>
+                <span><img src="./images/time.png"/> 距离2.5km</span>
+                <span><img src="./images/money.png"/> 配送费5元</span>
+                <span><img src="./images/location.png"/> 预计时长30分</span>
             </div>
           </div>
         </div>
         <div class="divDesc">
-          简介: 菩提阁中餐厅是菩提阁点餐的独立的品牌，定位“大众 化的美食外送餐饮”，旨为顾客打造专业美食。
+          简介：南华学院独家打造致力于本校师生的“绝味”美食，只有你想不到，没有你吃不到，有钱你就来，干就完了！
         </div>
       </div>
       <div class="divBody">
@@ -56,7 +56,7 @@
               <div>
                 <div class="divName">{{item.name}}</div>
                 <div class="divDesc">{{item.description}}</div>
-                <div class="divDesc">{{'月销' + (item.saleNum ? item.saleNum : 0)  }}</div>
+                <div class="divDesc">{{'月销 ' + (item.saleNum ? item.saleNum : 0)  }}</div>
                 <div class="divBottom"><span>￥</span><span>{{item.price/100}}</span></div>
                 <div class="divNum">
                   <div class="divSubtract" v-if="item.number > 0">
@@ -93,8 +93,8 @@
           <div class="divContent">
             <div v-for="flavor in dialogFlavor.flavors" :key="flavor.id">
                 <div class="divFlavorTitle">{{flavor.name}}</div>
-                <span v-for="item in JSON.parse(flavor.value)" 
-                :key="item"  
+                <span v-for="item in JSON.parse(flavor.value)"
+                :key="item"
                 @click="flavorClick(flavor,item)"
                 :class="{spanActive:flavor.dishFlavor === item}"
                 >{{item}}</span>
@@ -140,9 +140,9 @@
               </div>
           </div>
         </van-popup>
-        <van-dialog v-model="detailsDialog.show" 
-                    :show-confirm-button="false" 
-                    class="detailsDialog" 
+        <van-dialog v-model="detailsDialog.show"
+                    :show-confirm-button="false"
+                    class="detailsDialog"
                     ref="detailsDialog"
                     v-if="detailsDialog.show"
                     >
@@ -174,9 +174,9 @@
             <img src="./images/close.png"/>
           </div>
         </van-dialog>
-        <van-dialog v-model="setMealDialog.show" 
-                    :show-confirm-button="false" 
-                    class="setMealDetailsDialog" 
+        <van-dialog v-model="setMealDialog.show"
+                    :show-confirm-button="false"
+                    class="setMealDetailsDialog"
                     ref="setMealDetailsDialogd"
                     v-if="setMealDialog.show"
                     >
@@ -192,7 +192,7 @@
                   <div class="divPrice">
                     <span>￥</span><span>{{item.price/100}}</span>
                   </div>
-                </div>                
+                </div>
                 <div class="content">{{item.description}}</div>
               </div>
             </div>
@@ -221,7 +221,7 @@
         <!-- 引入组件库 -->
         <script src="../backend/plugins/element-ui/index.js"></script>
         <!-- 引入vant样式 -->
-        <script src="./js/vant.min.js"></script>        
+        <script src="./js/vant.min.js"></script>
         <!-- 引入axios -->
         <script src="../backend/plugins/axios/axios.min.js"></script>
         <script src="./js/request.js"></script>

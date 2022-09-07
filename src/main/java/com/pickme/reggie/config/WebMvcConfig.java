@@ -80,9 +80,9 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("瑞吉外卖")
+                .title("南华味来美食馆")
                 .version("1.0")
-                .description("瑞吉外卖项目接口文档")
+                .description("南华味来美食馆项目接口文档")
                 .build();
     }
 }

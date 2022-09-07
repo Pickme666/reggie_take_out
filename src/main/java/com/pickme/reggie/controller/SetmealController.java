@@ -1,16 +1,12 @@
 package com.pickme.reggie.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
-import com.pickme.reggie.pojo.dto.SetmealDto;
 import com.pickme.reggie.pojo.Setmeal;
-import com.pickme.reggie.service.inter.SetmealService;
+import com.pickme.reggie.pojo.dto.SetmealDto;
+import com.pickme.reggie.service.SetmealService;
 import io.swagger.annotations.Api;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,11 +23,10 @@ public class SetmealController {
     private SetmealService setmealService;
 
     /**
-     * 添加套餐，添加完成后清除缓存的指定分类下的套餐信息
+     * 添加套餐
      * @param setmealDto
      */
     @PostMapping
-    @CacheEvict(value = "setmealCache",key = "#setmealDto.categoryId")
     public Res<String> save(@RequestBody SetmealDto setmealDto) {
         setmealService.saveWithDish(setmealDto);
         return Res.success("");
@@ -39,11 +34,10 @@ public class SetmealController {
 
 
     /**
-     * 删除或批量删除套餐，@CacheEvict 注解的 allEntries 属性为是否清除指定缓存中的所有数据。
+     * 删除或批量删除套餐
      * @param ids
      */
     @DeleteMapping
-    @CacheEvict(value = "setmealCache",allEntries = true)
     public Res<String> remove(@RequestParam List<Long> ids) {
         setmealService.removeWithDish(ids);
         return Res.success("");
@@ -55,7 +49,6 @@ public class SetmealController {
      * @param setmealDto
      */
     @PutMapping
-    @CacheEvict(value = "setmealCache",allEntries = true)
     public Res<String> update(@RequestBody SetmealDto setmealDto) {
         setmealService.updateWithDish(setmealDto);
         return Res.success("");
@@ -63,18 +56,12 @@ public class SetmealController {
 
     /**
      * 修改和批量修改套餐状态，启售或停售
-     * @param s
+     * @param sta
      * @param ids
      */
-    @PostMapping("/status/{s}")
-    @CacheEvict(value = "setmealCache",allEntries = true)
-    public Res<String> status(@PathVariable Integer s, Long[] ids) {
-        Setmeal setmeal = new Setmeal();
-        setmeal.setStatus(s);
-        for (Long id : ids) {
-            setmeal.setId(id);
-            setmealService.updateById(setmeal);
-        }
+    @PostMapping("/status/{sta}")
+    public Res<String> status(@PathVariable Integer sta, Long[] ids) {
+        setmealService.updateStatus(sta,ids);
         return Res.success("");
     }
 
@@ -97,28 +84,17 @@ public class SetmealController {
      */
     @GetMapping("/page")
     public Res<Page<SetmealDto>> page(Integer page, Integer pageSize, String name) {
-        LambdaQueryWrapper<Setmeal> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(StringUtils.isNotEmpty(name),Setmeal::getName,name);
-        wrapper.orderByDesc(Setmeal::getUpdateTime);
-        //分页查询套餐基本和信息分类信息，将数据合并，返回 Page<SetmealDto> 对象
-        Page<Setmeal> setmealPage = new Page<>(page,pageSize);
-        Page<SetmealDto> setmealDtoPage = setmealService.pageWithCategory(setmealPage, wrapper);
+        Page<SetmealDto> setmealDtoPage = setmealService.pageWithCategory(page, pageSize, name);
         return Res.success(setmealDtoPage);
     }
 
     /**
-     * 根据分类id查询套餐列表（移动端），并缓存套餐列表数据
+     * 根据分类id查询套餐列表（移动端）
      * @param setmeal
      */
     @GetMapping("/list")
-    @Cacheable(value = "setmealCache",key = "#setmeal.categoryId")
     public Res<List<Setmeal>> list(Setmeal setmeal) {
-        Long categoryId = setmeal.getCategoryId();
-        Integer status = setmeal.getStatus();
-        LambdaQueryWrapper<Setmeal> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(categoryId != null,Setmeal::getCategoryId,categoryId);
-        wrapper.eq(status != null,Setmeal::getStatus,status);
-        List<Setmeal> list = setmealService.list(wrapper);
-        return Res.success(list);
+        List<Setmeal> setmealList = setmealService.listByCategoryId(setmeal);
+        return Res.success(setmealList);
     }
 }

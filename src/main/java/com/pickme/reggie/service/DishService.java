@@ -1,12 +1,10 @@
-package com.pickme.reggie.service.inter;
+package com.pickme.reggie.service;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.pickme.reggie.pojo.dto.DishDto;
 import com.pickme.reggie.pojo.Dish;
+import com.pickme.reggie.pojo.dto.DishDto;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -36,7 +34,7 @@ public interface DishService extends IService<Dish> {
 
     /**
      * 修改状态
-     * @param s
+     * @param sta
      * @param ids
      */
     @Transactional
@@ -51,10 +49,11 @@ public interface DishService extends IService<Dish> {
 
     /**
      * 分页查询
-     * @param dishPage
-     * @param wrapper
+     * @param page
+     * @param pageSize
+     * @param name
      */
-    Page<DishDto> pageWithCategory(Page<Dish> dishPage, Wrapper<Dish> wrapper);
+    Page<DishDto> pageWithCategory(Integer page, Integer pageSize, String name);
 
     /**
      * 根据分类id查询菜品（移动端）

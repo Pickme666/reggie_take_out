@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.MC;
 import com.pickme.reggie.common.Res;
 import com.pickme.reggie.pojo.Employee;
-import com.pickme.reggie.service.inter.EmployeeService;
+import com.pickme.reggie.service.EmployeeService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

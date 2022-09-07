@@ -3,7 +3,7 @@ package com.pickme.reggie.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
 import com.pickme.reggie.pojo.Category;
-import com.pickme.reggie.service.inter.CategoryService;
+import com.pickme.reggie.service.CategoryService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

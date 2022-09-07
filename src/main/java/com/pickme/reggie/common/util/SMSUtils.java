@@ -6,10 +6,13 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.profile.DefaultProfile;
+import com.pickme.reggie.common.MC;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 阿里云短信发送 SDK 工具类
  */
+@Slf4j
 public class SMSUtils {
 
 	/**
@@ -31,7 +34,7 @@ public class SMSUtils {
 		request.setTemplateParam("{\"code\":\""+param+"\"}");
 		try {
 			SendSmsResponse response = client.getAcsResponse(request);
-			System.out.println("短信发送成功");
+			log.info(MC.S_SEND_MSG);
 		}catch (ClientException e) {
 			e.printStackTrace();
 		}

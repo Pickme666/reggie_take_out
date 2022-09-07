@@ -1,22 +1,25 @@
 package com.pickme.reggie.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pickme.reggie.common.MC;
 import com.pickme.reggie.common.exception.BusinessException;
-import com.pickme.reggie.pojo.dto.SetmealDto;
 import com.pickme.reggie.mapper.SetmealMapper;
 import com.pickme.reggie.pojo.Category;
 import com.pickme.reggie.pojo.Setmeal;
 import com.pickme.reggie.pojo.SetmealDish;
-import com.pickme.reggie.service.inter.CategoryService;
-import com.pickme.reggie.service.inter.SetmealDishService;
-import com.pickme.reggie.service.inter.SetmealService;
+import com.pickme.reggie.pojo.dto.SetmealDto;
+import com.pickme.reggie.service.CategoryService;
+import com.pickme.reggie.service.SetmealDishService;
+import com.pickme.reggie.service.SetmealService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,11 +32,12 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal>imple
     private CategoryService categoryService;
 
     /**
-     * 添加套餐和保存包含的菜品
+     * 添加套餐和保存包含的菜品，添加完成后清除缓存的指定分类下的套餐信息
      * @param setmealDto
      * @return
      */
     @Override
+    @CacheEvict(value = "setmealCache",key = "#setmealDto.categoryId")
     public boolean saveWithDish(SetmealDto setmealDto) {
         //保存套餐基本信息
         this.save(setmealDto);
@@ -50,11 +54,12 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal>imple
     }
 
     /**
-     * 删除或批量删除套餐信息和套餐菜品信息
+     * 删除或批量删除套餐信息和套餐菜品信息，@CacheEvict 注解的 allEntries 属性为是否清除指定缓存中的所有数据。
      * @param ids
      * @return
      */
     @Override
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public boolean removeWithDish(List<Long> ids) {
         //查询该批次套餐中是否存在售卖中的套餐, 如果存在, 不允许删除
         LambdaQueryWrapper<Setmeal> setmealWrapper = new LambdaQueryWrapper<>();
@@ -77,6 +82,7 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal>imple
      * @return
      */
     @Override
+    @CacheEvict(value = "setmealCache",allEntries = true)
     public boolean updateWithDish(SetmealDto setmealDto) {
         long id = setmealDto.getId();
         this.updateById(setmealDto);
@@ -89,6 +95,24 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal>imple
             return item;
         }).collect(Collectors.toList());
         return setmealDishService.saveBatch(setmealDishes);
+    }
+
+    /**
+     * 修改状态
+     * @param sta
+     * @param ids
+     * @return
+     */
+    @Override
+    @CacheEvict(value = "setmealCache",allEntries = true)
+    public boolean updateStatus(Integer sta, Long[] ids) {
+        Setmeal setmeal = new Setmeal();
+        setmeal.setStatus(sta);
+        for (Long id : ids) {
+            setmeal.setId(id);
+            this.updateById(setmeal);
+        }
+        return false;
     }
 
     /**
@@ -112,15 +136,22 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal>imple
 
     /**
      * 分页查询套餐的分类信息，并和套餐的基本信息合并，返回一个新的分页模型对象
-     * @param setmealPage
-     * @param wrapper
-     * @return
+     * @param page
+     * @param pageSize
+     * @param name
      */
     @Override
-    public Page<SetmealDto> pageWithCategory(Page<Setmeal> setmealPage, Wrapper<Setmeal> wrapper) {
+    public Page<SetmealDto> pageWithCategory(Integer page, Integer pageSize, String name) {
+
+        LambdaQueryWrapper<Setmeal> wrapper = new LambdaQueryWrapper<>();
+        wrapper.like(StringUtils.isNotEmpty(name),Setmeal::getName,name);
+        wrapper.orderByDesc(Setmeal::getUpdateTime);
+
+        Page<Setmeal> setmealPage = new Page<>(page,pageSize);
         Page<SetmealDto> setmealDtoPage = new Page<>();
         List<Setmeal> setmealList = this.page(setmealPage, wrapper).getRecords();
         BeanUtils.copyProperties(setmealPage,setmealDtoPage,"records");
+
         List<SetmealDto> setmealDtoList = setmealList.stream().map((item) -> {
             SetmealDto dto = new SetmealDto();
             BeanUtils.copyProperties(item,dto);
@@ -130,8 +161,25 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal>imple
             }
             return dto;
         }).collect(Collectors.toList());
+
         setmealDtoPage.setRecords(setmealDtoList);
         return setmealDtoPage;
+    }
+
+    /**
+     * 根据分类id查询套餐列表（移动端），并缓存套餐列表数据
+     * @param setmeal
+     * @return
+     */
+    @Override
+    @Cacheable(value = "setmealCache",key = "#setmeal.categoryId")
+    public List<Setmeal> listByCategoryId(Setmeal setmeal) {
+        Long categoryId = setmeal.getCategoryId();
+        Integer status = setmeal.getStatus();
+        LambdaQueryWrapper<Setmeal> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(categoryId != null,Setmeal::getCategoryId,categoryId);
+        wrapper.eq(status != null,Setmeal::getStatus,status);
+        return this.list(wrapper);
     }
 
 }
