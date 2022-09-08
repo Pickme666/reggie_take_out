@@ -26,7 +26,8 @@
       <div class="login-form">
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules" >
           <div class="login-form-title">
-            <img src="../../images/login/logo.png" style="width:139px;height:42px;" alt="" />
+            <p style="color: #4f4f4f; font-size: 22px">南 华 味 来 美 食 馆</p>
+            <!--<img src="../../images/login/logo.png" style="width:139px;height:42px;" alt="" />-->
           </div>
           <el-form-item prop="username">
             <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号" maxlength="20"
@@ -65,7 +66,7 @@
         return {
           loginForm:{
             username: 'admin',
-            password: '123456'
+            password: ''
           },
           loading: false
         }
@@ -80,8 +81,10 @@
             }
           }
           const validatePassword = (rule, value, callback) => {
-            if (value.length < 6) {
-              callback(new Error('密码必须在6位以上'))
+            if (value.length < 1) {
+              callback(new Error('请输入密码'))
+            } else if (value.length < 6) {
+              callback(new Error('密码长度至少为6位'))
             } else {
               callback()
             }
@@ -100,7 +103,8 @@
             if (valid) {
               this.loading = true
               let res = await loginApi(this.loginForm)
-              if (String(res.code) === '1') {//1表示登录成功
+              //1表示登录成功
+              if (String(res.code) === '1') {
                 localStorage.setItem('userInfo',JSON.stringify(res.data))
                 window.location.href= '/backend/index.html'
               } else {

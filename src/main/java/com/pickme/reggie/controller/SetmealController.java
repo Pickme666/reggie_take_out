@@ -2,10 +2,14 @@ package com.pickme.reggie.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
+import com.pickme.reggie.pojo.Dish;
 import com.pickme.reggie.pojo.Setmeal;
+import com.pickme.reggie.pojo.SetmealDish;
+import com.pickme.reggie.pojo.dto.DishDto;
 import com.pickme.reggie.pojo.dto.SetmealDto;
 import com.pickme.reggie.service.SetmealService;
 import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +19,7 @@ import java.util.List;
  * 套餐管理
  */
 @Api(tags = "套餐管理")
+@Slf4j
 @RestController
 @RequestMapping("/setmeal")
 public class SetmealController {
@@ -29,6 +34,7 @@ public class SetmealController {
     @PostMapping
     public Res<String> save(@RequestBody SetmealDto setmealDto) {
         setmealService.saveWithDish(setmealDto);
+        log.info("添加套餐：{}",setmealDto.toString());
         return Res.success("");
     }
 
@@ -40,6 +46,7 @@ public class SetmealController {
     @DeleteMapping
     public Res<String> remove(@RequestParam List<Long> ids) {
         setmealService.removeWithDish(ids);
+        log.info("删除套餐：{}",ids);
         return Res.success("");
     }
 
@@ -96,5 +103,16 @@ public class SetmealController {
     public Res<List<Setmeal>> list(Setmeal setmeal) {
         List<Setmeal> setmealList = setmealService.listByCategoryId(setmeal);
         return Res.success(setmealList);
+    }
+
+    /**
+     * 根据id查询套餐中所包含的菜品
+     * @param id
+     * @return
+     */
+    @GetMapping("/dish/{id}")
+    public Res<List<DishDto>> getDish(@PathVariable Long id) {
+        List<DishDto> dishDtoList = setmealService.listDish(id);
+        return Res.success(dishDtoList);
     }
 }

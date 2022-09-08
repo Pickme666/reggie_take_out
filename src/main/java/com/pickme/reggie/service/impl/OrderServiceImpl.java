@@ -7,14 +7,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pickme.reggie.common.MC;
 import com.pickme.reggie.common.exception.BusinessException;
 import com.pickme.reggie.common.util.LocalContext;
-import com.pickme.reggie.pojo.dto.OrdersDto;
 import com.pickme.reggie.mapper.OrderMapper;
 import com.pickme.reggie.pojo.*;
+import com.pickme.reggie.pojo.dto.OrdersDto;
 import com.pickme.reggie.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -58,7 +59,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         //MybatisPlus id获取器，生成一个唯一id
         long orderId = IdWorker.getId();
         //一个可以原子更新的int值，处理数字类型的工具
-        AtomicInteger amount = new AtomicInteger();
+        AtomicInteger amounts = new AtomicInteger();
 
         //遍历购物车列表，设置订单明细数据
         List<OrderDetail> orderDetails = shoppingCarts.stream().map((item) -> {
@@ -66,8 +67,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
             BeanUtils.copyProperties(item,orderDetail,"id");
             orderDetail.setOrderId(orderId);
 
-            //计算订单金额：总价格 += 当前商品价格 * 数量。intValue()：将BigDecimal类型转换为int类型返回
-            amount.addAndGet(item.getAmount().multiply(new BigDecimal(item.getNumber())).intValue());
+            //计算订单金额：总价格 += 当前商品价格 * 100 * 数量。intValue()：将BigDecimal类型转换为int类型返回
+            //因为 AtomicInteger 只能添加int值，所以先将价格乘以100再计算，防止精度丢失
+            BigDecimal sum = item.getAmount().multiply(new BigDecimal(100));
+            amounts.addAndGet(sum.multiply(new BigDecimal(item.getNumber())).intValue());
 
             return orderDetail;
         }).collect(Collectors.toList());
@@ -83,7 +86,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         orders.setOrderTime(LocalDateTime.now());
         orders.setCheckoutTime(LocalDateTime.now());
         orders.setStatus(2);
-        orders.setAmount(new BigDecimal(amount.get()));//总金额
+        orders.setAmount(new BigDecimal((double) amounts.get() / 100));//总金额，除以100保留小数
         orders.setUserId(userId);
         orders.setNumber(String.valueOf(orderId));
         orders.setUserName(user.getName());
@@ -98,6 +101,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         );
         //保存
         this.save(orders);
+        log.info("用户 " + user.getPhone() + " 提交订单：{}", orders);
 
         //清空当前用户购物车数据
         return shoppingCartService.remove(wrapper);

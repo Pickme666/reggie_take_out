@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pickme.reggie.common.MC;
+import com.pickme.reggie.common.exception.BusinessException;
 import com.pickme.reggie.mapper.EmployeeMapper;
 import com.pickme.reggie.pojo.Employee;
 import com.pickme.reggie.service.EmployeeService;
@@ -26,9 +27,9 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper,Employee> im
         Employee emp = this.getOne(queryWrapper);
 
         //数据比对
-        if (emp == null)                            throw new RuntimeException(MC.E_LOGIN_NO_NAME);
-        if (!emp.getPassword().equals(password))    throw new RuntimeException(MC.E_LOGIN_PWD);
-        if (emp.getStatus() == 0)                   throw new RuntimeException(MC.E_LOGIN_DISABLED);
+        if (emp == null)                            throw new BusinessException(MC.E_LOGIN_NO_NAME);
+        if (!emp.getPassword().equals(password))    throw new BusinessException(MC.E_LOGIN_PWD);
+        if (emp.getStatus() == 0)                   throw new BusinessException(MC.E_LOGIN_DISABLED);
 
         return emp;
     }
@@ -38,7 +39,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper,Employee> im
         //查询账号是否已存在
         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Employee::getUsername,employee.getUsername());
-        if (this.getOne(queryWrapper) != null) throw new RuntimeException(MC.E_USERNAME_EXIST);
+        if (this.getOne(queryWrapper) != null) throw new BusinessException(MC.E_USERNAME_EXIST);
 
         //设置初始密码，并进行md5加密
         String pwd = DigestUtils.md5DigestAsHex(MC.DEFAULT_PWD.getBytes());

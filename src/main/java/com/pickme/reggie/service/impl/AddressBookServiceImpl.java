@@ -3,6 +3,7 @@ package com.pickme.reggie.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.pickme.reggie.common.exception.BusinessException;
 import com.pickme.reggie.common.util.LocalContext;
 import com.pickme.reggie.mapper.AddressBookMapper;
 import com.pickme.reggie.pojo.AddressBook;
@@ -40,7 +41,7 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper, Addre
 
         //SQL:select * from address_book where user_id = ? and is_default = 1
         AddressBook addressBook = this.getOne(wrapper);
-        if (null == addressBook) throw new RuntimeException("没有找到该对象");
+        if (null == addressBook) throw new BusinessException("没有找到该对象");
 
         return addressBook;
     }

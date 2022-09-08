@@ -1,6 +1,7 @@
 package com.pickme.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pickme.reggie.common.Res;
 import com.pickme.reggie.pojo.dto.DishDto;
@@ -46,6 +47,7 @@ public class DishController {
         //清除当前分类的菜品缓存数据
         redisTemplate.delete(key);*/
 
+        log.info("添加菜品：{}",dishDto.toString());
         return Res.success("");
     }
 
@@ -63,6 +65,7 @@ public class DishController {
         //清理此所有缓存
         redisTemplate.delete(keys);*/
 
+        log.info("删除菜品：{}",ids);
         return Res.success("");
     }
 

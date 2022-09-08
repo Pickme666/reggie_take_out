@@ -2,7 +2,10 @@ package com.pickme.reggie.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pickme.reggie.pojo.Dish;
 import com.pickme.reggie.pojo.Setmeal;
+import com.pickme.reggie.pojo.SetmealDish;
+import com.pickme.reggie.pojo.dto.DishDto;
 import com.pickme.reggie.pojo.dto.SetmealDto;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,4 +62,11 @@ public interface SetmealService extends IService<Setmeal> {
      * @return
      */
     List<Setmeal> listByCategoryId(Setmeal setmeal);
+
+    /**
+     * 查询套餐中的菜品
+     * @param id
+     * @return
+     */
+    List<DishDto> listDish(Long id);
 }

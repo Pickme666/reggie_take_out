@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>com.pickme</groupId>
-    <artifactId>reggie_take_out</artifactId>
+    <artifactId>nh_food_hall</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -46,7 +46,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
         </dependency>
 
         <dependency>
@@ -132,14 +131,12 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
-
         <profile>
             <id>env_pro</id>
             <properties>
                 <profile.active>pro</profile.active>
             </properties>
         </profile>
-
         <profile>
             <id>env_test</id>
             <properties>

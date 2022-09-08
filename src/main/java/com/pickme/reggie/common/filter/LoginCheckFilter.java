@@ -47,7 +47,7 @@ public class LoginCheckFilter implements Filter {
 
         //获取本次请求的URI
         String uri = request.getRequestURI();
-        log.info("拦截到请求URI：" + uri);
+        //log.info("拦截到请求URI：" + uri);
 
         //判断本次请求是否需要过滤处理
         if (check(urls,uri)) {
@@ -72,12 +72,12 @@ public class LoginCheckFilter implements Filter {
             LocalContext.setCurrentId(userId);
 
             filterChain.doFilter(request,response);
-            log.info("用户已登录，用户id为：{}",userId);
+            //log.info("用户已登录，用户id为：{}",userId);
             return;
         }
 
         //未登录，页面跳转
-        log.info("用户未登录");
+        log.info("用户未登录访问：{}",uri);
         response.getWriter().write(JSON.toJSONString(Res.error("NOTLOGIN")));
     }
 

@@ -7,10 +7,13 @@ import com.pickme.reggie.common.MC;
 import com.pickme.reggie.common.exception.BusinessException;
 import com.pickme.reggie.mapper.SetmealMapper;
 import com.pickme.reggie.pojo.Category;
+import com.pickme.reggie.pojo.Dish;
 import com.pickme.reggie.pojo.Setmeal;
 import com.pickme.reggie.pojo.SetmealDish;
+import com.pickme.reggie.pojo.dto.DishDto;
 import com.pickme.reggie.pojo.dto.SetmealDto;
 import com.pickme.reggie.service.CategoryService;
+import com.pickme.reggie.service.DishService;
 import com.pickme.reggie.service.SetmealDishService;
 import com.pickme.reggie.service.SetmealService;
 import org.apache.commons.lang.StringUtils;
@@ -30,6 +33,8 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal>imple
     private SetmealDishService setmealDishService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private DishService dishService;
 
     /**
      * 添加套餐和保存包含的菜品，添加完成后清除缓存的指定分类下的套餐信息
@@ -180,6 +185,29 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal>imple
         wrapper.eq(categoryId != null,Setmeal::getCategoryId,categoryId);
         wrapper.eq(status != null,Setmeal::getStatus,status);
         return this.list(wrapper);
+    }
+
+    /**
+     * 根据套餐id查询此套餐中所包含的菜品
+     * @param id
+     * @return
+     */
+    @Override
+    public List<DishDto> listDish(Long id) {
+
+        LambdaQueryWrapper<SetmealDish> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(id != null,SetmealDish::getSetmealId,id);
+
+        List<SetmealDish> setmealDishList = setmealDishService.list(wrapper);
+
+        //遍历 List<SetmealDish> 集合，根据菜品id查询菜品信息和数量，返回一个 List<DishDto>
+        return setmealDishList.stream().map(item -> {
+            Dish dish = dishService.getById(item.getDishId());
+            DishDto dto = new DishDto();
+            BeanUtils.copyProperties(dish,dto);
+            dto.setCopies(item.getCopies());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
 }

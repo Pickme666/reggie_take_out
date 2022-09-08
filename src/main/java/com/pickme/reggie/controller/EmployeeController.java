@@ -34,7 +34,7 @@ public class EmployeeController {
 
         //登录成功，将员工id存入到服务端Session中
         request.getSession().setAttribute("employee",emp.getId());
-        log.info("员工登录成功，用户名：{}",emp.getUsername());
+        log.info("员工登录成功，账户：{}",emp.getUsername());
 
         return Res.success(emp);
     }
@@ -58,6 +58,7 @@ public class EmployeeController {
     @PostMapping
     public Res<String> save(@RequestBody Employee employee) {
         employeeService.saveEmployee(employee);
+        log.info("添加员工：{}",employee.toString());
         return Res.success(MC.S_INSERT);
     }
 

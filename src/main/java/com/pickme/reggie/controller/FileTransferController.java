@@ -46,6 +46,7 @@ public class FileTransferController {
         //将文件储存到指定位置
         try {
             file.transferTo(new File(filePath + newFilename));
+            log.info("文件上传成功：{}",newFilename);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

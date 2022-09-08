@@ -5,6 +5,7 @@ import com.pickme.reggie.common.Res;
 import com.pickme.reggie.pojo.Category;
 import com.pickme.reggie.service.CategoryService;
 import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  * 分类管理
  */
 @Api(tags = "分类管理")
+@Slf4j
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
@@ -27,6 +29,7 @@ public class CategoryController {
     @PostMapping
     public Res<String> save(@RequestBody Category category) {
         categoryService.save(category);
+        log.info("添加分类：{}",category.toString());
         return Res.success("");
     }
 
@@ -38,6 +41,7 @@ public class CategoryController {
     @DeleteMapping()
     public Res<String> delete(Long ids) {
         categoryService.removeCategory(ids);
+        log.info("删除分类：{}",ids);
         return Res.success("");
     }
 

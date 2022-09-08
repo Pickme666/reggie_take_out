@@ -32,6 +32,7 @@ public class UserController {
     @PostMapping("/sendMsg")
     public Res<String> sendMsg(@RequestBody User user) {
         String code = userService.sendSecurityCode(user);
+        log.info("登录手机号：{}",user.getPhone());
         log.info("验证码：{}",code);
         return Res.success(code);
     }
@@ -44,7 +45,7 @@ public class UserController {
     @PostMapping("/login")
     public Res<User> login(@RequestBody Map<String,String> map, HttpSession session) {
         User user = userService.userLoginVerify(map, session);
-        log.info("移动端登录用户ID：{}",user.getId());
+        log.info("用户登录成功，手机号：{}",user.getPhone());
         return Res.success(user);
     }
 
