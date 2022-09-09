@@ -17,9 +17,22 @@ spring:
     port: 6379
     #password: 123456
     database: 1
+    # 连接超时时间（毫秒）
+    timeout: 10000
+    jedis:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 8
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1
+        # 连接池中的最大空闲连接
+        max-idle: 8
+        # 连接池中的最小空闲连接
+        min-idle: 0
+  # Spring Cache 相关配置
   cache:
     redis:
-      # 设置缓存数据的过期时间（单位：毫秒）
+      # 设置redis缓存数据的过期时间（单位：毫秒）
       time-to-live: 3600000
   # 热部署相关配置（开启）
   devtools:
